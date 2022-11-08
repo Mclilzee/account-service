@@ -3,30 +3,32 @@ package project.accountservice;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+
 public class User {
 
-    enum Role {
-        ADMINISTRATOR,
-        ACCOUNTANT,
-        USER
-    }
-
+    @NotBlank
     private String name;
-    private String lastName;
-    private String email;
-    private String password;
-    private Role role;
 
-    public User(String name, String lastName, String email, String password) {
-        if (name.isBlank() || lastName.isBlank() || email.isBlank() || password.isBlank() || !isValidEmail(email)) {
+    @NotBlank
+    private String lastname;
+
+    @Pattern(regexp = ".*@acme.com")
+    private String email;
+
+    @NotBlank
+    private String password;
+
+    public User(String name, String lastname, String email, String password) {
+        if (name.isBlank() || lastname.isBlank() || email.isBlank() || password.isBlank() || !isValidEmail(email)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
         this.name = name;
-        this.lastName = lastName;
+        this.lastname = lastname;
         this.email = email;
         this.password = password;
-        this.role = Role.USER;
     }
 
     private boolean isValidEmail(String email) {
@@ -38,7 +40,7 @@ public class User {
     }
 
     public String getLastName() {
-        return lastName;
+        return lastname;
     }
 
     public String getEmail() {
@@ -50,7 +52,7 @@ public class User {
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this.lastname = lastName;
     }
 
     public void setEmail(String email) {
