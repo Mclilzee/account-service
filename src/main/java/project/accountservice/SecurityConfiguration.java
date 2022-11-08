@@ -16,7 +16,6 @@ public class SecurityConfiguration {
                 .mvcMatchers("/api/empl/payment").hasAnyRole("USER, ACCOUNTANT")
                 .mvcMatchers("/api/auth/changepass").hasAnyRole("USER", "ACCOUNTANT", "ADMINISTRATOR")
                 .mvcMatchers("/api/auth/signup").permitAll()
-                .anyRequest().authenticated()
                 .and().httpBasic()
                 .and().csrf().disable();
 
