@@ -23,11 +23,12 @@ public class SecurityConfiguration {
                 .mvcMatchers("/api/auth/changepass").hasAnyRole("USER", "ACCOUNTANT", "ADMINISTRATOR")
                 .mvcMatchers("/api/auth/signup").permitAll()
                 .and().httpBasic()
-                .and().csrf().disable();
+                .and().formLogin()
+                .and().csrf().disable().headers().frameOptions().disable();
 
         return http.build();
     }
-//
+
 //    @Bean
 //    public DataSource dataSource() {
 //        return new EmbeddedDatabaseBuilder()
@@ -47,5 +48,4 @@ public class SecurityConfiguration {
 //        users.createUser(user);
 //        return users;
 //    }
-
 }
