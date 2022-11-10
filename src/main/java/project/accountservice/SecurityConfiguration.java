@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import project.accountservice.user.UserDetailsServiceImp;
@@ -19,10 +20,12 @@ public class SecurityConfiguration {
                 .mvcMatchers("/api/acct").hasRole("ACCOUNTANT")
                 .mvcMatchers("/api/empl/payment").hasAnyRole("USER", "ACCOUNTANT")
                 .mvcMatchers("/api/auth/changepass").hasAnyRole("USER", "ACCOUNTANT", "ADMINISTRATOR")
-                .mvcMatchers("/api/auth/signup").permitAll()
+                .mvcMatchers("/api/auth/signup", "/actuator/shutdown").permitAll()
+                .anyRequest().authenticated()
                 .and().httpBasic()
                 .and().formLogin()
-                .and().csrf().disable().headers().frameOptions().disable();
+                .and().csrf().disable().headers().frameOptions().disable()
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         return http.build();
     }

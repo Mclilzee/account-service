@@ -27,12 +27,11 @@ public class AccountServiceController {
 
     @PostMapping("/api/auth/signup")
     public User signUp(@Valid @RequestBody User user) {
-        user.setPassword(encoder.encode(user.getPassword()));
-        Optional<User> newUser = Optional.ofNullable(userRepository.findByEmail(user.getEmail()));
-        if (newUser.isPresent()) {
+        if (userRepository.existsByEmail(user.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User exist!");
         }
 
+        user.setPassword(encoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
