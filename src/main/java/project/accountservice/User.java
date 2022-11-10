@@ -2,15 +2,14 @@ package project.accountservice;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 @Entity(name = "users")
-@Table(uniqueConstraints = {
-        @UniqueConstraint(name = "uc_user_email", columnNames = {"email"})
-})
+@JsonPropertyOrder({"id", "name", "lastname", "email"})
 public class User {
 
     @Id
