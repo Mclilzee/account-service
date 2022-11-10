@@ -42,7 +42,7 @@ public class User {
     public User(String name, String lastname, String email, String password) {
         this.name = name;
         this.lastname = lastname;
-        this.email = email;
+        this.email = email.toLowerCase();
         this.password = password;
         this.role = "ROLE_USER";
     }

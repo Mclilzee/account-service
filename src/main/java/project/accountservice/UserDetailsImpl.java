@@ -13,7 +13,7 @@ public class UserDetailsImpl implements UserDetails {
     private final List<GrantedAuthority> rolesAndAuthorities;
 
     public UserDetailsImpl(User user) {
-        username = user.getName();
+        username = user.getEmail();
         password = user.getPassword();
         rolesAndAuthorities = List.of(new SimpleGrantedAuthority(user.getRole()));
     }

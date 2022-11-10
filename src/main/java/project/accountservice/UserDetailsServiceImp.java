@@ -15,12 +15,12 @@ public class UserDetailsServiceImp implements UserDetailsService {
     UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-        Optional<User> user = Optional.ofNullable(userRepository.findUserByName(name));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<User> user = Optional.ofNullable(userRepository.findByEmail(email));
         if (user.isPresent()) {
             return new UserDetailsImpl(user.get());
         }
 
-        throw new UsernameNotFoundException("Not found " + name);
+        throw new UsernameNotFoundException("Not found " + email);
     }
 }
