@@ -1,11 +1,14 @@
 package project.accountservice;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
+@JsonPropertyOrder({"name", "lastname", "email"})
 public class User {
 
     @NotBlank
@@ -18,21 +21,19 @@ public class User {
     private String email;
 
     @NotBlank
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    public User(String name, String lastname, String email, String password) {
-        if (name.isBlank() || lastname.isBlank() || email.isBlank() || password.isBlank() || !isValidEmail(email)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String role;
 
+    @JsonCreator
+    public User(String name, String lastname, String email, String password) {
         this.name = name;
         this.lastname = lastname;
         this.email = email;
         this.password = password;
-    }
-
-    private boolean isValidEmail(String email) {
-        return email.endsWith("acme.com");
+        this.role = "ROLE_USER";
     }
 
     public String getName() {
@@ -45,6 +46,14 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getRole() {
+        return role;
     }
 
     public void setName(String name) {
@@ -61,5 +70,9 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setRole(String role) {
+        this.role = "ROLE_" + role;
     }
 }

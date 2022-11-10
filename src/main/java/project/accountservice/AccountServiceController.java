@@ -5,11 +5,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 public class AccountServiceController {
 
     @PostMapping("/api/auth/signup")
-    public User signUp(@RequestBody User user) {
+    public User signUp(@Valid @RequestBody User user) {
         return user;
     }
 
