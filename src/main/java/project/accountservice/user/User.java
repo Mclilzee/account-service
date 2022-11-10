@@ -1,4 +1,4 @@
-package project.accountservice;
+package project.accountservice.user;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
