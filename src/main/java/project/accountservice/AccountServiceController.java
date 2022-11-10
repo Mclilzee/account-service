@@ -1,5 +1,6 @@
 package project.accountservice;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,21 +17,19 @@ import java.util.Optional;
 public class AccountServiceController {
 
     @Autowired
-    UserRepositoryService userRepositoryService;
+    BCryptPasswordEncoder encoder;
 
     @Autowired
-    BCryptPasswordEncoder encoder;
+    UserRepository userRepository;
 
     @PostMapping("/api/auth/signup")
     public User signUp(@Valid @RequestBody User user) {
-        user.setPassword(encoder.encode(user.getPassword()));
-        Optional<User> newUser = userRepositoryService.getUserByEmail(user.getEmail());
+        Optional<User> newUser = Optional.ofNullable(userRepository.findByEmail(user.getEmail()));
         if (newUser.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User exist!");
         }
 
-        userRepositoryService.addUser(user);
-        return userRepositoryService.getUserByEmail(user.getEmail()).get();
+        return userRepository.save(user);
     }
 
     @GetMapping("/api/empl/payment")

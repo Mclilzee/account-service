@@ -8,6 +8,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 @Entity(name = "users")
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "uc_user_email", columnNames = {"email"})
+})
 public class User {
 
     @Id
@@ -22,6 +25,7 @@ public class User {
     private String lastname;
 
     @Pattern(regexp = ".*@acme.com")
+    @Column(unique = true)
     private String email;
 
     @NotBlank
@@ -40,6 +44,7 @@ public class User {
         this.lastname = lastname;
         this.email = email;
         this.password = password;
+        this.role = "ROLE_USER";
     }
 
     public Long getId() {
