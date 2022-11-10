@@ -1,29 +1,42 @@
 package project.accountservice;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.util.Objects;
 
 @JsonPropertyOrder({"name", "lastname", "email"})
+@Entity(name = "\"user\"")
 public class User {
 
+    @Id
+    @Column
+    private Long userId;
+
     @NotBlank
+    @Column
     private String name;
 
     @NotBlank
+    @Column
     private String lastname;
 
     @Pattern(regexp = ".*@acme.com")
+    @Column
     private String email;
 
     @NotBlank
+    @Column
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    @Column
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String role;
 
@@ -74,5 +87,18 @@ public class User {
 
     public void setRole(String role) {
         this.role = "ROLE_" + role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
     }
 }
