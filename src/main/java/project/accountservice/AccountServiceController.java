@@ -2,6 +2,8 @@ package project.accountservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,8 +37,8 @@ public class AccountServiceController {
     }
 
     @GetMapping("/api/empl/payment")
-    public String payment() {
-        return "hello payment!";
+    public User payment(@AuthenticationPrincipal UserDetails user) {
+        return userRepository.findByEmail(user.getUsername());
     }
 
     @GetMapping("/public")
