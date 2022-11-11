@@ -6,11 +6,11 @@ import java.time.LocalDateTime;
 
 @JsonPropertyOrder({"timestamp", "status", "error", "message", "path"})
 public class CustomErrorMessage {
-    private LocalDateTime timestamp;
-    private int status;
-    private String error;
-    private String message;
-    private String path;
+    private final LocalDateTime timestamp;
+    private final int status;
+    private final String error;
+    private final String message;
+    private final String path;
 
     public CustomErrorMessage(LocalDateTime timestamp, int status, String error, String message, String path) {
         this.timestamp = timestamp;
