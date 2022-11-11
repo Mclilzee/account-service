@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import project.accountservice.user.User;
 import project.accountservice.user.UserRepository;
+import project.accountservice.util.Password;
 import project.accountservice.util.PasswordUtil;
 
 import javax.validation.Valid;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @RestController
 public class AccountServiceController {
@@ -27,7 +30,7 @@ public class AccountServiceController {
 
     @PostMapping("/api/auth/signup")
     public User signUp(@Valid @RequestBody User user) {
-        if (PasswordUtil.passwordIsBreached(user.getPassword())) {
+        if (PasswordUtil.isBreached(user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The password is in the hacker's database!");
         }
         if (userRepository.existsByEmail(user.getEmail())) {
@@ -43,8 +46,34 @@ public class AccountServiceController {
         return userRepository.findByEmail(user.getUsername());
     }
 
-    @GetMapping("/public")
-    public String getPublic() {
-        return "this is public";
+    @PostMapping("/api/auth/changepass")
+    public Map<String, String> changePassword(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody Password newPassword) {
+
+        if (PasswordUtil.isBreached(newPassword.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The password is in the hacker's database!");
+        }
+
+        saveUserToDatabase(userDetails, newPassword);
+        return getPasswordChangeSuccessResponse(userDetails);
+    }
+
+    private Map<String, String> getPasswordChangeSuccessResponse(UserDetails userDetails) {
+        Map<String, String> responseBody = new LinkedHashMap<>();
+        responseBody.put("email", userDetails.getUsername());
+        responseBody.put("status", "The password has been updated successfully");
+        return responseBody;
+    }
+
+    private void saveUserToDatabase(UserDetails userDetails, Password newPassword) {
+        User user = userRepository.findByEmail(userDetails.getUsername());
+
+        if (encoder.matches(newPassword.getPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The passwords must be different!");
+        }
+
+        user.setPassword(encoder.encode(newPassword.getPassword()));
+        userRepository.save(user);
     }
 }
