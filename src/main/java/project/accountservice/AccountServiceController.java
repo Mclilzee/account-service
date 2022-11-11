@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import project.accountservice.user.User;
 import project.accountservice.user.UserRepository;
+import project.accountservice.util.PasswordUtil;
 
 import javax.validation.Valid;
 
@@ -26,6 +27,9 @@ public class AccountServiceController {
 
     @PostMapping("/api/auth/signup")
     public User signUp(@Valid @RequestBody User user) {
+        if (PasswordUtil.passwordIsBreached(user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The password is in the hacker's database!");
+        }
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User exist!");
         }
