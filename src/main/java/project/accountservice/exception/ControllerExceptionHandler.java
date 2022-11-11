@@ -1,23 +1,30 @@
 package project.accountservice.exception;
 
-import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
 
 @ControllerAdvice
-public class ControllerExceptionHandler {
+public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<CustomErrorMessage> handleConstraintViolation(
-            ConstraintViolationException e, WebRequest request) {
-        CustomErrorMessage body = new CustomErrorMessage(HttpStatus.BAD_REQUEST.value(),
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        String defaultMessage = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        CustomErrorMessage body = new CustomErrorMessage(
                 LocalDateTime.now(),
-                "User exist!");
+                status.value(),
+                status.getReasonPhrase(),
+                defaultMessage,
+                request.getDescription(false).substring(4)
+        );
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
+
+
 }
