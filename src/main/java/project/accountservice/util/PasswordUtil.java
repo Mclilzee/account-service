@@ -7,7 +7,7 @@ public class PasswordUtil {
             "PasswordForMay", "PasswordForJune", "PasswordForJuly", "PasswordForAugust",
             "PasswordForSeptember", "PasswordForOctober", "PasswordForNovember", "PasswordForDecember");
 
-    public static boolean passwordIsBreached(String password) {
+    public static boolean isBreached(String password) {
         return BREACHED_PASSWORDS.contains(password);
     }
 }
