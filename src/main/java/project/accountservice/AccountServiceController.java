@@ -14,7 +14,6 @@ import project.accountservice.user.User;
 import project.accountservice.user.UserRepository;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
 @RestController
 public class AccountServiceController {
