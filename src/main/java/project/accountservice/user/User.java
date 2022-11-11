@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 @Entity(name = "users")
 @JsonPropertyOrder({"id", "name", "lastname", "email"})
@@ -28,6 +29,7 @@ public class User {
     private String email;
 
     @NotBlank
+    @Size(min = 12, message = "The password length must be at least 12 chars!")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
