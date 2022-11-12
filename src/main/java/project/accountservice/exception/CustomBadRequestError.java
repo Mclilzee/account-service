@@ -1,6 +1,8 @@
 package project.accountservice.exception;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
 
@@ -12,12 +14,12 @@ public class CustomErrorMessage {
     private final String message;
     private final String path;
 
-    public CustomErrorMessage(LocalDateTime timestamp, int status, String error, String message, String path) {
-        this.timestamp = timestamp;
-        this.status = status;
-        this.error = error;
+    public CustomErrorMessage(String message, WebRequest request) {
+        this.timestamp = LocalDateTime.now();
+        this.status = HttpStatus.BAD_REQUEST.value();
+        this.error = HttpStatus.BAD_REQUEST.getReasonPhrase();
         this.message = message;
-        this.path = path;
+        this.path = request.getDescription(false).substring(4);
     }
 
     public LocalDateTime getTimestamp() {
