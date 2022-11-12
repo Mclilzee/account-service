@@ -59,17 +59,32 @@ public class PaymentController {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("/api/empl/payment")
+    @GetMapping(value = "/api/empl/payment", params = "period")
     public ResponseEntity<UserPayment> getPayment(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String period) {
         User user = userRepository.findByEmail(userDetails.getUsername());
         Payment payment = paymentRepository.findByEmployeeAndPeriod(user.getEmail(), period);
-        UserPayment userPayment = new UserPayment(user.getName(), user.getLastname(), period, payment.getSalary());
+        if (payment == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Period doesn't exist for user");
+        }
+
+        UserPayment userPayment = new UserPayment(user.getName(), user.getLastname(), payment.getPeriod(), payment.getSalary());
 
         return new ResponseEntity<>(userPayment, HttpStatus.OK);
     }
 
-//    @GetMapping("/api/empl/payment")
-//    public ResponseEntity<Map<String, String>> getPayment(@AuthenticationPrincipal UserDetails userDetails) {
-//
-//    }
+    @GetMapping("/api/empl/payment")
+    public ResponseEntity<List<UserPayment>> getPayment(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userRepository.findByEmail(userDetails.getUsername());
+        List<Payment> payments = paymentRepository.findAllByEmployee(user.getEmail());
+        List<UserPayment> userPayments = payments
+                .stream()
+                .map(payment -> new UserPayment(user.getName(), user.getLastname(), payment.getPeriod(), payment.getSalary()))
+                .toList();
+
+        if (payments.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User doesn't have any payments");
+        }
+
+        return new ResponseEntity<>(userPayments, HttpStatus.OK);
+    }
 }
