@@ -15,10 +15,7 @@ import project.accountservice.user.User;
 import project.accountservice.user.UserRepository;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Validated
 @RestController
@@ -62,12 +59,12 @@ public class PaymentController {
     @GetMapping(value = "/api/empl/payment", params = "period")
     public ResponseEntity<UserPayment> getPayment(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String period) {
         User user = userRepository.findByEmail(userDetails.getUsername());
-        Payment payment = paymentRepository.findByEmployeeAndPeriod(user.getEmail(), period);
-        if (payment == null) {
+        Optional<Payment> payment = Optional.ofNullable(paymentRepository.findByEmployeeAndPeriod(user.getEmail(), period));
+        if (payment.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Period doesn't exist for user");
         }
 
-        UserPayment userPayment = new UserPayment(user.getName(), user.getLastname(), payment.getPeriod(), payment.getSalary());
+        UserPayment userPayment = new UserPayment(user.getName(), user.getLastname(), payment.get().getPeriod(), payment.get().getSalary());
 
         return new ResponseEntity<>(userPayment, HttpStatus.OK);
     }
@@ -76,15 +73,19 @@ public class PaymentController {
     public ResponseEntity<List<UserPayment>> getPayment(@AuthenticationPrincipal UserDetails userDetails) {
         User user = userRepository.findByEmail(userDetails.getUsername());
         List<Payment> payments = paymentRepository.findAllByEmployee(user.getEmail());
-        List<UserPayment> userPayments = payments
-                .stream()
-                .map(payment -> new UserPayment(user.getName(), user.getLastname(), payment.getPeriod(), payment.getSalary()))
-                .toList();
 
         if (payments.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User doesn't have any payments");
         }
 
+        List<UserPayment> userPayments = getUserPayments(user, payments);
         return new ResponseEntity<>(userPayments, HttpStatus.OK);
+    }
+
+    private List<UserPayment> getUserPayments(User user, List<Payment> payments) {
+        return payments
+                .stream()
+                .map(payment -> new UserPayment(user.getName(), user.getLastname(), payment.getPeriod(), payment.getSalary()))
+                .toList();
     }
 }
