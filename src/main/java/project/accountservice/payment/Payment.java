@@ -1,5 +1,6 @@
 package project.accountservice.payment;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import javax.persistence.Entity;
@@ -19,6 +20,7 @@ public class Payment {
     @Min(value = 0, message = "Salary cannot be negative")
     private Long salary;
 
+    @JsonCreator
     public Payment(String employee, String period, Long salary) {
         this.employee = employee.toLowerCase();
         this.period = period;
