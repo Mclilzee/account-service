@@ -24,7 +24,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(ConstraintViolationException ex, WebRequest request) {
+    protected ResponseEntity<CustomBadRequestError> handleMethodArgumentNotValid(ConstraintViolationException ex, WebRequest request) {
         String message = ex.getConstraintViolations()
                 .stream()
                 .limit(1)
