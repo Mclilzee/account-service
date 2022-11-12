@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
@@ -23,7 +25,11 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     protected ResponseEntity<Object> handleMethodArgumentNotValid(ConstraintViolationException ex, WebRequest request) {
-        String message = ex.getMessage().substring(ex.getMessage().indexOf(": ") + 2);
+        String message = ex.getConstraintViolations()
+                .stream()
+                .limit(1)
+                .map(ConstraintViolation::getMessageTemplate)
+                .collect(Collectors.joining(""));
         CustomBadRequestError body = new CustomBadRequestError(message, request);
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
