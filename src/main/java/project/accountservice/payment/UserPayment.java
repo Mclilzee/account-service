@@ -1,5 +1,7 @@
 package project.accountservice.payment;
 
+import project.accountservice.util.StringUtil;
+
 import java.time.Month;
 
 public class UserPayment {
@@ -23,8 +25,7 @@ public class UserPayment {
     private String formatPeriod(String period) {
         String[] periods = period.split("-");
         Month month = Month.of(Integer.parseInt(periods[0]));
-        String capitalizedMonth = month.toString().substring(0, 1).toUpperCase() + month.toString().substring(1).toLowerCase();
-        return "%s-%s".formatted(capitalizedMonth, periods[1]);
+        return "%s-%s".formatted(StringUtil.capitalize(month.toString()), periods[1]);
     }
 
     public String getName() {
