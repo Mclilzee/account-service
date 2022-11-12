@@ -34,7 +34,7 @@ public class PaymentController {
         }
 
         addTransactions(payments);
-        return getStatusAddedSuccessfullyResponse();
+        return getStatusAddedSuccessfullyResponse("Added successfully!");
     }
 
     @Transactional
@@ -52,7 +52,7 @@ public class PaymentController {
 
         payment.setSalary(newPayment.getSalary());
         paymentRepository.save(payment);
-        return getStatusAddedSuccessfullyResponse();
+        return getStatusAddedSuccessfullyResponse("Updated successfully!");
     }
 
     private Payment findPayment(Payment newPayment) {
@@ -67,9 +67,9 @@ public class PaymentController {
         return payments.stream().allMatch(payment -> userRepository.existsByEmail(payment.getEmployee()));
     }
 
-    private ResponseEntity<Map<String, String>> getStatusAddedSuccessfullyResponse() {
+    private ResponseEntity<Map<String, String>> getStatusAddedSuccessfullyResponse(String message) {
         Map<String, String> body = new HashMap<>();
-        body.put("status", "Added successfully!");
+        body.put("status", message);
 
         return new ResponseEntity<>(body, HttpStatus.OK);
     }
