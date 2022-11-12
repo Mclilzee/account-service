@@ -7,14 +7,14 @@ import org.springframework.web.context.request.WebRequest;
 import java.time.LocalDateTime;
 
 @JsonPropertyOrder({"timestamp", "status", "error", "message", "path"})
-public class CustomErrorMessage {
+public class CustomBadRequestError {
     private final LocalDateTime timestamp;
     private final int status;
     private final String error;
     private final String message;
     private final String path;
 
-    public CustomErrorMessage(String message, WebRequest request) {
+    public CustomBadRequestError(String message, WebRequest request) {
         this.timestamp = LocalDateTime.now();
         this.status = HttpStatus.BAD_REQUEST.value();
         this.error = HttpStatus.BAD_REQUEST.getReasonPhrase();
