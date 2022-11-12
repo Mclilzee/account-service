@@ -3,16 +3,19 @@ package project.accountservice.payment;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(name = "period_per_employee", columnNames = {"employee", "period"}))
 @JsonPropertyOrder({"employee", "period", "salary"})
 public class Payment {
 
     @Id
+    @GeneratedValue
+    private long id;
+
     private String employee;
 
     @Pattern(regexp = "(0[1-9]|1[0-2])-20\\d{2}", message = "Incorrect period format")
