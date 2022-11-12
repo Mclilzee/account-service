@@ -3,15 +3,15 @@ package project.accountservice.payment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 import project.accountservice.exception.CustomBadRequestError;
+import project.accountservice.user.User;
 import project.accountservice.user.UserRepository;
 
 import javax.validation.Valid;
@@ -58,4 +58,18 @@ public class PaymentController {
         CustomBadRequestError body = new CustomBadRequestError("User payment period duplicated", request);
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
+
+    @GetMapping("/api/empl/payment")
+    public ResponseEntity<UserPayment> getPayment(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String period) {
+        User user = userRepository.findByEmail(userDetails.getUsername());
+        Payment payment = paymentRepository.findByEmployeeAndPeriod(user.getEmail(), period);
+        UserPayment userPayment = new UserPayment(user.getName(), user.getLastname(), period, payment.getSalary());
+
+        return new ResponseEntity<>(userPayment, HttpStatus.OK);
+    }
+
+//    @GetMapping("/api/empl/payment")
+//    public ResponseEntity<Map<String, String>> getPayment(@AuthenticationPrincipal UserDetails userDetails) {
+//
+//    }
 }
