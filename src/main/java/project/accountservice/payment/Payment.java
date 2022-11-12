@@ -1,12 +1,11 @@
 package project.accountservice.payment;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.Min;
-import java.time.Period;
+import java.util.Objects;
 
 @Entity
 @JsonPropertyOrder({"employee", "period", "salary"})
@@ -21,7 +20,7 @@ public class Payment {
     private Long salary;
 
     public Payment(String employee, String period, Long salary) {
-        this.employee = employee;
+        this.employee = employee.toLowerCase();
         this.period = period;
         this.salary = salary;
     }
