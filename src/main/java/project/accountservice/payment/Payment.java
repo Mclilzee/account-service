@@ -10,7 +10,7 @@ import javax.validation.constraints.Pattern;
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(name = "period_per_employee", columnNames = {"employee", "period"}))
 @JsonPropertyOrder({"employee", "period", "salary"})
-public class Payment {
+public class Payment implements Comparable<Payment> {
 
     @Id
     @GeneratedValue
@@ -56,5 +56,10 @@ public class Payment {
 
     public void setSalary(long salary) {
         this.salary = salary;
+    }
+
+    @Override
+    public int compareTo(Payment o) {
+        return o.period.compareTo(this.period);
     }
 }
