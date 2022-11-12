@@ -19,7 +19,7 @@ public class UserPayment {
     }
 
     private String formatSalary(long salary) {
-        return "%d dollars(s) %d cent(s)".formatted(salary / 100, salary % 100);
+        return "%d dollar(s) %d cent(s)".formatted(salary / 100, salary % 100);
     }
 
     private String formatPeriod(String period) {
