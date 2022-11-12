@@ -90,12 +90,8 @@ public class PaymentController {
     @GetMapping("/api/empl/payment")
     public ResponseEntity<List<UserPayment>> getPayment(@AuthenticationPrincipal UserDetails userDetails) {
         User user = userRepository.findByEmail(userDetails.getUsername());
+
         List<Payment> payments = paymentRepository.findAllByEmployee(user.getEmail());
-
-        if (payments.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User doesn't have any payments");
-        }
-
         List<UserPayment> userPayments = getUserPayments(user, payments);
         return new ResponseEntity<>(userPayments, HttpStatus.OK);
     }
