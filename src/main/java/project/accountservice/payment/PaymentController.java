@@ -34,9 +34,7 @@ public class PaymentController {
         }
 
         addTransactions(payments);
-        Map<String, String> response = new HashMap<>();
-        response.put("status", "Added successfully!");
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return getStatusAddedSuccessfullyResponse();
     }
 
     @Transactional
@@ -44,16 +42,36 @@ public class PaymentController {
         paymentRepository.saveAll(payments);
     }
 
+    @PutMapping("/api/acct/payments")
+    public ResponseEntity<Map<String, String>> updatePayment(@Valid @RequestBody Payment newPayment) {
+        if (!userRepository.existsByEmail(newPayment.getEmployee())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid user");
+        }
+
+        Payment payment = findPayment(newPayment);
+
+        payment.setSalary(newPayment.getSalary());
+        paymentRepository.save(payment);
+        return getStatusAddedSuccessfullyResponse();
+    }
+
+    private Payment findPayment(Payment newPayment) {
+        Optional<Payment> payment = Optional.ofNullable(paymentRepository.findByEmployeeAndPeriod(newPayment.getEmployee(), newPayment.getPeriod()));
+        if (payment.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Period doesn't exist for user");
+        }
+        return payment.get();
+    }
+
     private boolean usersInDatabase(List<Payment> payments) {
         return payments.stream().allMatch(payment -> userRepository.existsByEmail(payment.getEmployee()));
     }
 
-    @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
-    protected ResponseEntity<CustomBadRequestError> handleFailedQueryException(
-            org.hibernate.exception.ConstraintViolationException ex,
-            WebRequest request) {
-        CustomBadRequestError body = new CustomBadRequestError("User payment period duplicated", request);
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    private ResponseEntity<Map<String, String>> getStatusAddedSuccessfullyResponse() {
+        Map<String, String> body = new HashMap<>();
+        body.put("status", "Added successfully!");
+
+        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
     @GetMapping(value = "/api/empl/payment", params = "period")
@@ -87,5 +105,13 @@ public class PaymentController {
                 .stream()
                 .map(payment -> new UserPayment(user.getName(), user.getLastname(), payment.getPeriod(), payment.getSalary()))
                 .toList();
+    }
+
+    @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
+    protected ResponseEntity<CustomBadRequestError> handleFailedQueryException(
+            org.hibernate.exception.ConstraintViolationException ex,
+            WebRequest request) {
+        CustomBadRequestError body = new CustomBadRequestError("User payment period duplicated", request);
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 }
