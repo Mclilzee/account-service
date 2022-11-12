@@ -1,4 +1,4 @@
-package project.accountservice.util;
+package project.accountservice.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
