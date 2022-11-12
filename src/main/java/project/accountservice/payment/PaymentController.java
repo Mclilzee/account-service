@@ -5,10 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
+import project.accountservice.exception.CustomBadRequestError;
 import project.accountservice.user.UserRepository;
 
 import javax.validation.Valid;
@@ -29,7 +32,9 @@ public class PaymentController {
 
     @PostMapping("/api/acct/payments")
     public ResponseEntity<Map<String, String>> addPayments(@RequestBody List<@Valid Payment> payments) {
-        validateUsers(payments);
+        if (!usersInDatabase(payments)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid user in list");
+        }
 
         addTransactions(payments);
         Map<String, String> response = new HashMap<>();
@@ -42,25 +47,15 @@ public class PaymentController {
         paymentRepository.saveAll(payments);
     }
 
-    private void validateUsers(List<@Valid Payment> payments) {
-        if (userIsDuplicated(payments)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is duplicated");
-        } else if (usersHaveSamePeriod(payments)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Users have same period");
-        } else if (!usersInDatabase(payments)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid user in list");
-        }
-    }
-
-    private boolean userIsDuplicated(List<Payment> payments) {
-        return !payments.stream().map(Payment::getEmployee).allMatch(new HashSet<>()::add);
-    }
-
     private boolean usersInDatabase(List<Payment> payments) {
         return payments.stream().allMatch(payment -> userRepository.existsByEmail(payment.getEmployee()));
     }
 
-    private boolean usersHaveSamePeriod(List<Payment> payments) {
-        return !payments.stream().map(Payment::getPeriod).allMatch(new HashSet<>()::add);
+    @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
+    protected ResponseEntity<CustomBadRequestError> handleFailedQueryException(
+            org.hibernate.exception.ConstraintViolationException ex,
+            WebRequest request) {
+        CustomBadRequestError body = new CustomBadRequestError("User payment period duplicated", request);
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 }
