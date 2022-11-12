@@ -29,7 +29,6 @@ public class PaymentController {
 
     @PostMapping("/api/acct/payments")
     public ResponseEntity<Map<String, String>> addPayments(@RequestBody List<@Valid Payment> payments) {
-
         validateUsers(payments);
 
         addTransactions(payments);

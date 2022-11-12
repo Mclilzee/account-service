@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.Min;
-import java.util.Objects;
+import javax.validation.constraints.Pattern;
 
 @Entity
 @JsonPropertyOrder({"employee", "period", "salary"})
@@ -15,6 +15,7 @@ public class Payment {
     @Id
     private String employee;
 
+    @Pattern(regexp = "(0[1-9]|1[0-2])-20\\d{2}", message = "Incorrect period format")
     private String period;
 
     @Min(value = 0, message = "Salary cannot be negative")
