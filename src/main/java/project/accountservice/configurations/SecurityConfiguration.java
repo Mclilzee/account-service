@@ -16,9 +16,8 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .mvcMatchers("/api/admin").hasRole("ADMINISTRATOR")
-                .mvcMatchers("/api/acct/payments").permitAll()
-                .mvcMatchers("/api/acct").hasRole("ACCOUNTANT")
+                .mvcMatchers("/api/admin/**").hasRole("ADMINISTRATOR")
+                .mvcMatchers("/api/acct/**").hasRole("ACCOUNTANT")
                 .mvcMatchers("/api/empl/payment").hasAnyRole("USER", "ACCOUNTANT")
                 .mvcMatchers("/api/auth/changepass").hasAnyRole("USER", "ACCOUNTANT", "ADMINISTRATOR")
                 .mvcMatchers("/api/auth/signup", "/actuator/shutdown").permitAll()
