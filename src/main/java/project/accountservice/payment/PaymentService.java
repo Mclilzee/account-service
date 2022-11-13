@@ -39,10 +39,17 @@ public class PaymentService {
     public void updatePayment(PaymentRequest paymentRequest) {
         Payment newPayment = new Payment(paymentRequest.getPeriod(), paymentRequest.getSalary());
         User user = getUser(paymentRequest);
-        int index = user.getPayments().indexOf(newPayment);
-        user.getPayments().set(index, newPayment);
+        updateUserPayment(newPayment, user);
 
         userRepository.save(user);
+    }
+
+    private void updateUserPayment(Payment newPayment, User user) {
+        int index = user.getPayments().indexOf(newPayment);
+        if (index == -1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment period does not exist");
+        }
+        user.getPayments().set(index, newPayment);
     }
 
     private User getUser(PaymentRequest paymentRequest) {
