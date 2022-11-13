@@ -58,16 +58,7 @@ public class PaymentController {
     @GetMapping("/api/empl/payment")
     public ResponseEntity<List<PaymentDetails>> getPayment(@AuthenticationPrincipal UserDetails userDetails) {
         User user = userRepository.findByEmail(userDetails.getUsername());
-
-        List<Payment> payments = paymentRepository.findAllByEmployee(user.getEmail());
-        List<PaymentDetails> paymentDetails = getUserPayments(user, payments);
+        List<PaymentDetails> paymentDetails = paymentService.getPaymentDetails(user);
         return new ResponseEntity<>(paymentDetails, HttpStatus.OK);
-    }
-
-    private List<PaymentDetails> getUserPayments(User user, List<Payment> payments) {
-        return payments
-                .stream()
-                .map(payment -> new PaymentDetails(user.getName(), user.getLastname(), payment.getPeriod(), payment.getSalary()))
-                .toList();
     }
 }

@@ -59,6 +59,13 @@ public class PaymentService {
         return new PaymentDetails(user.getName(), user.getLastname(), payment.getPeriod(), payment.getSalary());
     }
 
+    public List<PaymentDetails> getPaymentDetails(User user) {
+        return user.getPayments()
+                .stream()
+                .map(payment -> new PaymentDetails(user.getName(), user.getLastname(), payment.getPeriod(), payment.getSalary()))
+                .toList();
+    }
+
     public Payment getPayment(User user, String period) {
         List<Payment> payments = user.getPayments().stream()
                 .filter(payment -> payment.getPeriod().equals(period))
