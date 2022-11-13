@@ -12,6 +12,7 @@ import project.accountservice.exception.CustomBadRequestError;
 import project.accountservice.user.User;
 import project.accountservice.user.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,24 +33,29 @@ public class PaymentService {
 
     private User addPaymentToUser(PaymentRequest paymentRequest) {
         User user = getUser(paymentRequest);
-        user.addPayment(paymentRequest.getPeriod(), paymentRequest.getSalary());
+        List<Payment> newPayments = new ArrayList<>(user.getPayments());
+        newPayments.add(new Payment(paymentRequest.getPeriod(), paymentRequest.getSalary()));
+        user.setPayments(newPayments);
         return user;
     }
 
     public void updatePayment(PaymentRequest paymentRequest) {
-        Payment newPayment = new Payment(paymentRequest.getPeriod(), paymentRequest.getSalary());
         User user = getUser(paymentRequest);
-        updateUserPayment(newPayment, user);
-
+        Payment newPayment = new Payment(paymentRequest.getPeriod(), paymentRequest.getSalary());
+        updateUserPayment(user, newPayment);
         userRepository.save(user);
     }
 
-    private void updateUserPayment(Payment newPayment, User user) {
+    private void updateUserPayment(User user, Payment newPayment) {
         int index = user.getPayments().indexOf(newPayment);
         if (index == -1) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment period does not exist");
         }
         user.getPayments().set(index, newPayment);
+    }
+
+    public PaymentDetails getPaymentDetails(User user, String period) {
+
     }
 
     private User getUser(PaymentRequest paymentRequest) {
