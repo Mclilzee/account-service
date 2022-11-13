@@ -3,11 +3,13 @@ package project.accountservice.user;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import project.accountservice.payment.Payment;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity(name = "users")
 @JsonPropertyOrder({"id", "name", "lastname", "email"})
@@ -35,6 +37,11 @@ public class User {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String role;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany
+    @JoinColumn(name = "employee_id", nullable = false)
+    private List<Payment> payments;
 
     public User() {
     }
@@ -94,5 +101,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email.toLowerCase();
+    }
+
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
     }
 }
