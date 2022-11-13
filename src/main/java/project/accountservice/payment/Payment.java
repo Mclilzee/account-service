@@ -53,12 +53,12 @@ public class Payment implements Comparable<Payment> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Payment payment = (Payment) o;
-        return id == payment.id && Objects.equals(period, payment.period) && Objects.equals(salary, payment.salary);
+        return Objects.equals(period, payment.period);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, period, salary);
+        return Objects.hash(period);
     }
 
     @Override
