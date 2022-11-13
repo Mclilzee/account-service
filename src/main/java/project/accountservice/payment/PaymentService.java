@@ -34,6 +34,7 @@ public class PaymentService {
         List<Payment> newPayments = new ArrayList<>(user.getPayments());
         newPayments.add(new Payment(paymentRequest.getPeriod(), paymentRequest.getSalary()));
         user.setPayments(newPayments);
+        userRepository.save(user);
     }
 
     public void updatePayment(PaymentRequest paymentRequest) {

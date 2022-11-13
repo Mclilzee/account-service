@@ -17,7 +17,7 @@ public class PaymentRequest {
 
     @JsonCreator
     public PaymentRequest(String employee, String period, long salary) {
-        this.employee = employee;
+        this.employee = employee.toLowerCase();
         this.period = period;
         this.salary = salary;
     }

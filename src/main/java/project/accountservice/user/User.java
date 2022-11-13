@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "users")
@@ -39,7 +40,7 @@ public class User {
     private String role;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id", nullable = false)
     private List<Payment> payments;
 
