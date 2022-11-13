@@ -2,6 +2,7 @@ package project.accountservice.payment;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.hibernate.annotations.OnDelete;
 import project.accountservice.user.User;
 
 import javax.persistence.*;
@@ -11,32 +12,24 @@ import java.util.Objects;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(name = "period_per_employee", columnNames = {"employee_id", "period"}))
-@JsonPropertyOrder({"employee", "period", "salary"})
 public class Payment implements Comparable<Payment> {
 
     @Id
     @GeneratedValue
     private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "employee_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", nullable = false)
     private User employee;
 
-    @Pattern(regexp = "(0[1-9]|1[0-2])-20\\d{2}", message = "Incorrect period format")
     private String period;
 
-    @Min(value = 0, message = "Salary cannot be negative")
     private Long salary;
 
     public User getEmployee() {
         return employee;
     }
 
-    public void setEmployee(User employee) {
-        this.employee = employee;
-    }
-
-    @JsonCreator
     public Payment(User employee, String period, Long salary) {
         this.period = period;
         this.salary = salary;
