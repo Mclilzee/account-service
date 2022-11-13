@@ -1,13 +1,10 @@
 package project.accountservice.payment;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import project.accountservice.user.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Pattern;
 import java.util.Objects;
 
 @Entity
@@ -19,6 +16,7 @@ public class Payment implements Comparable<Payment> {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "employee_id", nullable = false)
     private User employee;
 
