@@ -1,5 +1,7 @@
 package project.accountservice.payment;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 
@@ -13,6 +15,7 @@ public class PaymentRequest {
     @Min(value = 0, message = "Salary cannot be negative")
     private long salary;
 
+    @JsonCreator
     public PaymentRequest(String employee, String period, long salary) {
         this.employee = employee;
         this.period = period;
