@@ -47,7 +47,10 @@ public class PaymentService {
         User user = getUser(paymentRequest.getEmployee());
         Payment payment = paymentRepository.findByEmployeeAndPeriod(user, paymentRequest.getPeriod());
         if (payment == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment with period " + paymentRequest.getPeriod());
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Payment with period " + paymentRequest.getPeriod() + " does not exist"
+            );
         }
         payment.setSalary(paymentRequest.getSalary());
         paymentRepository.save(payment);
