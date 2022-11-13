@@ -55,7 +55,20 @@ public class PaymentService {
     }
 
     public PaymentDetails getPaymentDetails(User user, String period) {
+        Payment payment = getPayment(user, period);
+        return new PaymentDetails(user.getName(), user.getLastname(), payment.getPeriod(), payment.getSalary());
+    }
 
+    public Payment getPayment(User user, String period) {
+        List<Payment> payments = user.getPayments().stream()
+                .filter(payment -> payment.getPeriod().equals(period))
+                .limit(1)
+                .collect(Collectors.toList());
+        if (payments.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment does not exist");
+        }
+
+        return payments.get(0);
     }
 
     private User getUser(PaymentRequest paymentRequest) {

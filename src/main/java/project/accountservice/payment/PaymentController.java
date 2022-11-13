@@ -22,49 +22,22 @@ import java.util.*;
 public class PaymentController {
 
     @Autowired
-    UserRepository userRepository;
+    PaymentService paymentService;
 
     @Autowired
-    PaymentRepository paymentRepository;
+    UserRepository userRepository;
 
     @PostMapping("/api/acct/payments")
-    public ResponseEntity<Map<String, String>> addPayments(@RequestBody List<@Valid Payment> payments) {
-        if (!usersInDatabase(payments)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid user in list");
-        }
-
-        addTransactions(payments);
+    public ResponseEntity<Map<String, String>> addPayments(@RequestBody List<@Valid PaymentRequest> paymentRequests) {
+        paymentService.addPayments(paymentRequests);
         return getStatusAddedSuccessfullyResponse("Added successfully!");
     }
 
-    @Transactional
-    private void addTransactions(List<Payment> payments) {
-        paymentRepository.saveAll(payments);
-    }
 
     @PutMapping("/api/acct/payments")
-    public ResponseEntity<Map<String, String>> updatePayment(@Valid @RequestBody Payment newPayment) {
-        if (!userRepository.existsByEmail(newPayment.getEmployee())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid user");
-        }
-
-        Payment payment = findPayment(newPayment);
-
-        payment.setSalary(newPayment.getSalary());
-        paymentRepository.save(payment);
+    public ResponseEntity<Map<String, String>> updatePayment(@Valid @RequestBody PaymentRequest paymentRequest) {
+        paymentService.updatePayment(paymentRequest);
         return getStatusAddedSuccessfullyResponse("Updated successfully!");
-    }
-
-    private Payment findPayment(Payment newPayment) {
-        Optional<Payment> payment = Optional.ofNullable(paymentRepository.findByEmployeeAndPeriod(newPayment.getEmployee(), newPayment.getPeriod()));
-        if (payment.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Period doesn't exist for user");
-        }
-        return payment.get();
-    }
-
-    private boolean usersInDatabase(List<Payment> payments) {
-        return payments.stream().allMatch(payment -> userRepository.existsByEmail(payment.getEmployee()));
     }
 
     private ResponseEntity<Map<String, String>> getStatusAddedSuccessfullyResponse(String message) {
@@ -75,39 +48,26 @@ public class PaymentController {
     }
 
     @GetMapping(value = "/api/empl/payment", params = "period")
-    public ResponseEntity<UserPayment> getPayment(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String period) {
+    public ResponseEntity<PaymentDetails> getPayment(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String period) {
         User user = userRepository.findByEmail(userDetails.getUsername());
-        Optional<Payment> payment = Optional.ofNullable(paymentRepository.findByEmployeeAndPeriod(user.getEmail(), period));
-        if (payment.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Period doesn't exist for user");
-        }
+        PaymentDetails paymentDetails = paymentService.getPaymentDetails(user, period);
 
-        UserPayment userPayment = new UserPayment(user.getName(), user.getLastname(), payment.get().getPeriod(), payment.get().getSalary());
-
-        return new ResponseEntity<>(userPayment, HttpStatus.OK);
+        return new ResponseEntity<>(paymentDetails, HttpStatus.OK);
     }
 
     @GetMapping("/api/empl/payment")
-    public ResponseEntity<List<UserPayment>> getPayment(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<List<PaymentDetails>> getPayment(@AuthenticationPrincipal UserDetails userDetails) {
         User user = userRepository.findByEmail(userDetails.getUsername());
 
         List<Payment> payments = paymentRepository.findAllByEmployee(user.getEmail());
-        List<UserPayment> userPayments = getUserPayments(user, payments);
-        return new ResponseEntity<>(userPayments, HttpStatus.OK);
+        List<PaymentDetails> paymentDetails = getUserPayments(user, payments);
+        return new ResponseEntity<>(paymentDetails, HttpStatus.OK);
     }
 
-    private List<UserPayment> getUserPayments(User user, List<Payment> payments) {
+    private List<PaymentDetails> getUserPayments(User user, List<Payment> payments) {
         return payments
                 .stream()
-                .map(payment -> new UserPayment(user.getName(), user.getLastname(), payment.getPeriod(), payment.getSalary()))
+                .map(payment -> new PaymentDetails(user.getName(), user.getLastname(), payment.getPeriod(), payment.getSalary()))
                 .toList();
-    }
-
-    @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
-    protected ResponseEntity<CustomBadRequestError> handleFailedQueryException(
-            org.hibernate.exception.ConstraintViolationException ex,
-            WebRequest request) {
-        CustomBadRequestError body = new CustomBadRequestError("User payment period duplicated", request);
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 }
