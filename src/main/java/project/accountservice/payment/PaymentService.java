@@ -2,6 +2,7 @@ package project.accountservice.payment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,54 +18,62 @@ public class PaymentService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    PaymentRepository paymentRepository;
+
     @Transactional
     public void addPayments(List<PaymentRequest> requests) {
-        requests.forEach(this::addPaymentToUser);
+        requests.forEach(this::addPayment);
     }
 
-    private void addPaymentToUser(PaymentRequest paymentRequest) {
-        User user = getUser(paymentRequest);
-        throwErrorIfPeriodExist(user, paymentRequest);
-        user.getPayments().put(paymentRequest.getPeriod(), new Payment(paymentRequest.getPeriod(), paymentRequest.getSalary()));
-        userRepository.save(user);
+    private void addPayment(PaymentRequest paymentRequest) {
+        User user = getUser(paymentRequest.getEmployee());
+        Payment payment = createPayment(paymentRequest, user);
+        paymentRepository.save(payment);
     }
 
-    private void throwErrorIfPeriodExist(User user, PaymentRequest paymentRequest) {
-        if (user.getPayments().containsKey(paymentRequest.getPeriod())) {
+    private Payment createPayment(PaymentRequest paymentRequest, User user) {
+        if (paymentRepository.existsByEmployeeAndPeriod(user, paymentRequest.getPeriod())) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     String.format("User %s has payment for period %s", user.getEmail(), paymentRequest.getPeriod())
             );
         }
+
+        return new Payment(user, paymentRequest.getPeriod(), paymentRequest.getSalary());
     }
 
     public void updatePayment(PaymentRequest paymentRequest) {
-        User user = getUser(paymentRequest);
-        updateUserPayment(user, paymentRequest.getPeriod(), paymentRequest.getSalary());
-        userRepository.save(user);
-    }
-
-    private void updateUserPayment(User user, String period, long salary) {
-        if (!user.getPayments().containsKey(period)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment period does not exist");
+        User user = getUser(paymentRequest.getEmployee());
+        Payment payment = paymentRepository.findByEmployeeAndPeriod(user, paymentRequest.getPeriod());
+        if (payment == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment with period " + paymentRequest.getPeriod());
         }
-        user.getPayments().get(period).setSalary(salary);
+        payment.setSalary(paymentRequest.getSalary());
+        paymentRepository.save(payment);
     }
 
-    public PaymentDetails getPaymentDetails(User user, String period) {
+    public PaymentDetails getPaymentDetails(UserDetails userDetails, String period) {
+        User user = getUser(userDetails.getUsername());
         Payment payment = getPayment(user, period);
         return new PaymentDetails(user.getName(), user.getLastname(), payment.getPeriod(), payment.getSalary());
     }
 
-    public List<PaymentDetails> getPaymentDetails(User user) {
-        return user.getPayments().values()
+    public List<PaymentDetails> getPaymentDetails(UserDetails userDetails) {
+        User user = getUser(userDetails.getUsername());
+        return paymentRepository.findAllByEmployee(user)
                 .stream()
-                .map(payment -> new PaymentDetails(user.getName(), user.getLastname(), payment.getPeriod(), payment.getSalary()))
+                .map(payment -> new PaymentDetails(
+                        payment.getEmployee().getName(),
+                        payment.getEmployee().getLastname(),
+                        payment.getPeriod(),
+                        payment.getSalary())
+                )
                 .toList();
     }
 
     public Payment getPayment(User user, String period) {
-        Optional<Payment> payment = Optional.ofNullable(user.getPayments().get(period));
+        Optional<Payment> payment = Optional.ofNullable(paymentRepository.findByEmployeeAndPeriod(user, period));
         if (payment.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment does not exist");
         }
@@ -72,8 +81,8 @@ public class PaymentService {
         return payment.get();
     }
 
-    private User getUser(PaymentRequest paymentRequest) {
-        Optional<User> user = Optional.ofNullable(userRepository.findByEmail(paymentRequest.getEmployee()));
+    private User getUser(String email) {
+        Optional<User> user = Optional.ofNullable(userRepository.findByEmail(email));
         if (user.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Employee is not in database");
         }
