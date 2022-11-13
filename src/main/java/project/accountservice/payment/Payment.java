@@ -2,6 +2,7 @@ package project.accountservice.payment;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import project.accountservice.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -17,11 +18,23 @@ public class Payment implements Comparable<Payment> {
     @GeneratedValue
     private long id;
 
+    @ManyToOne
+    @JoinColumn(name = "employee_id")
+    private User user;
+
     @Pattern(regexp = "(0[1-9]|1[0-2])-20\\d{2}", message = "Incorrect period format")
     private String period;
 
     @Min(value = 0, message = "Salary cannot be negative")
     private Long salary;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     @JsonCreator
     public Payment(String period, Long salary) {
