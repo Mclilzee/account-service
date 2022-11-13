@@ -16,8 +16,6 @@ public class Payment implements Comparable<Payment> {
     @GeneratedValue
     private long id;
 
-    private String employee;
-
     @Pattern(regexp = "(0[1-9]|1[0-2])-20\\d{2}", message = "Incorrect period format")
     private String period;
 
@@ -25,21 +23,12 @@ public class Payment implements Comparable<Payment> {
     private Long salary;
 
     @JsonCreator
-    public Payment(String employee, String period, Long salary) {
-        this.employee = employee.toLowerCase();
+    public Payment(String period, Long salary) {
         this.period = period;
         this.salary = salary;
     }
 
     public Payment() {
-    }
-
-    public String getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(String employee) {
-        this.employee = employee;
     }
 
     public String getPeriod() {
