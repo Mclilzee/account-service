@@ -5,17 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.server.ResponseStatusException;
-import project.accountservice.exception.CustomBadRequestError;
-import project.accountservice.user.User;
-import project.accountservice.user.UserRepository;
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Validated
 @RestController
@@ -23,9 +19,6 @@ public class PaymentController {
 
     @Autowired
     PaymentService paymentService;
-
-    @Autowired
-    UserRepository userRepository;
 
     @PostMapping("/api/acct/payments")
     public ResponseEntity<Map<String, String>> addPayments(@RequestBody List<@Valid PaymentRequest> paymentRequests) {
@@ -49,16 +42,14 @@ public class PaymentController {
 
     @GetMapping(value = "/api/empl/payment", params = "period")
     public ResponseEntity<PaymentDetails> getPayment(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String period) {
-        User user = userRepository.findByEmail(userDetails.getUsername());
-        PaymentDetails paymentDetails = paymentService.getPaymentDetails(user, period);
+        PaymentDetails paymentDetails = paymentService.getPaymentDetails(userDetails, period);
 
         return new ResponseEntity<>(paymentDetails, HttpStatus.OK);
     }
 
     @GetMapping("/api/empl/payment")
     public ResponseEntity<List<PaymentDetails>> getPayment(@AuthenticationPrincipal UserDetails userDetails) {
-        User user = userRepository.findByEmail(userDetails.getUsername());
-        List<PaymentDetails> paymentDetails = paymentService.getPaymentDetails(user);
+        List<PaymentDetails> paymentDetails = paymentService.getPaymentDetails(userDetails);
         return new ResponseEntity<>(paymentDetails, HttpStatus.OK);
     }
 }
