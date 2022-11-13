@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
+import java.util.Objects;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(name = "period_per_employee", columnNames = {"employee_id", "period"}))
@@ -45,6 +46,19 @@ public class Payment implements Comparable<Payment> {
 
     public void setSalary(long salary) {
         this.salary = salary;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Payment payment = (Payment) o;
+        return id == payment.id && Objects.equals(period, payment.period) && Objects.equals(salary, payment.salary);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, period, salary);
     }
 
     @Override
