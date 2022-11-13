@@ -11,6 +11,8 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Entity(name = "users")
 @JsonPropertyOrder({"id", "name", "lastname", "email"})
@@ -42,7 +44,7 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id", nullable = false)
-    private List<Payment> payments;
+    private Map<String, Payment> payments;
 
     public User() {
     }
@@ -104,11 +106,7 @@ public class User {
         this.email = email.toLowerCase();
     }
 
-    public List<Payment> getPayments() {
+    public Map<String, Payment> getPayments() {
         return payments;
-    }
-
-    public void setPayments(List<Payment> payments) {
-        this.payments = payments;
     }
 }
