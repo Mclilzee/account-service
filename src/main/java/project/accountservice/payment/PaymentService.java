@@ -2,14 +2,9 @@ package project.accountservice.payment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
-import project.accountservice.exception.CustomBadRequestError;
 import project.accountservice.user.User;
 import project.accountservice.user.UserRepository;
 
@@ -29,8 +24,18 @@ public class PaymentService {
 
     private void addPaymentToUser(PaymentRequest paymentRequest) {
         User user = getUser(paymentRequest);
+        throwErrorIfPeriodExist(user, paymentRequest);
         user.getPayments().put(paymentRequest.getPeriod(), new Payment(paymentRequest.getPeriod(), paymentRequest.getSalary()));
         userRepository.save(user);
+    }
+
+    private void throwErrorIfPeriodExist(User user, PaymentRequest paymentRequest) {
+        if (user.getPayments().containsKey(paymentRequest.getPeriod())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    String.format("User %s has payment for period %s", user.getEmail(), paymentRequest.getPeriod())
+            );
+        }
     }
 
     public void updatePayment(PaymentRequest paymentRequest) {
@@ -74,13 +79,5 @@ public class PaymentService {
         }
 
         return user.get();
-    }
-
-    @ExceptionHandler(TransactionSystemException.class)
-    protected ResponseEntity<CustomBadRequestError> handleFailedQueryException(
-            TransactionSystemException ex,
-            WebRequest request) {
-        CustomBadRequestError body = new CustomBadRequestError("User payment period duplicated", request);
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 }
