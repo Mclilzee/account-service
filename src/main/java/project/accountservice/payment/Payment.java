@@ -8,7 +8,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(name = "period_per_employee", columnNames = {"employee", "period"}))
+@Table(uniqueConstraints = @UniqueConstraint(name = "period_per_employee", columnNames = {"employee_id", "period"}))
 @JsonPropertyOrder({"employee", "period", "salary"})
 public class Payment implements Comparable<Payment> {
 
