@@ -26,19 +26,14 @@ public class PaymentService {
 
     @Transactional
     public void addPayments(List<PaymentRequest> requests) {
-        List<User> users = requests.stream()
-                .map(this::addPaymentToUser)
-                .collect(Collectors.toList());
-
-        userRepository.saveAll(users);
+        requests.forEach(this::addPaymentToUser);
     }
 
-    private User addPaymentToUser(PaymentRequest paymentRequest) {
+    private void addPaymentToUser(PaymentRequest paymentRequest) {
         User user = getUser(paymentRequest);
         List<Payment> newPayments = new ArrayList<>(user.getPayments());
         newPayments.add(new Payment(paymentRequest.getPeriod(), paymentRequest.getSalary()));
         user.setPayments(newPayments);
-        return user;
     }
 
     public void updatePayment(PaymentRequest paymentRequest) {
@@ -48,12 +43,12 @@ public class PaymentService {
         userRepository.save(user);
     }
 
-    private void updateUserPayment(User user, Payment newPayment) {
-        int index = user.getPayments().indexOf(newPayment);
+    private void updateUserPayment(User user, Payment payment) {
+        int index = user.getPayments().indexOf(payment);
         if (index == -1) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment period does not exist");
         }
-        user.getPayments().set(index, newPayment);
+        user.getPayments().get(index).setSalary(payment.getSalary());
     }
 
     public PaymentDetails getPaymentDetails(User user, String period) {
@@ -89,7 +84,7 @@ public class PaymentService {
         return user.get();
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
+    @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
     protected ResponseEntity<CustomBadRequestError> handleFailedQueryException(
             ConstraintViolationException ex,
             WebRequest request) {
