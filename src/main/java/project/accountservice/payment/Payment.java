@@ -20,7 +20,7 @@ public class Payment implements Comparable<Payment> {
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
-    private User user;
+    private User employee;
 
     @Pattern(regexp = "(0[1-9]|1[0-2])-20\\d{2}", message = "Incorrect period format")
     private String period;
@@ -28,18 +28,19 @@ public class Payment implements Comparable<Payment> {
     @Min(value = 0, message = "Salary cannot be negative")
     private Long salary;
 
-    public User getUser() {
-        return user;
+    public User getEmployee() {
+        return employee;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setEmployee(User employee) {
+        this.employee = employee;
     }
 
     @JsonCreator
-    public Payment(String period, Long salary) {
+    public Payment(User employee, String period, Long salary) {
         this.period = period;
         this.salary = salary;
+        this.employee = employee;
     }
 
     public Payment() {
