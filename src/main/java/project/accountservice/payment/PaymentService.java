@@ -35,16 +35,15 @@ public class PaymentService {
 
     public void updatePayment(PaymentRequest paymentRequest) {
         User user = getUser(paymentRequest);
-        Payment payment = new Payment(paymentRequest.getPeriod(), paymentRequest.getSalary());
-        updateUserPayment(user, payment);
+        updateUserPayment(user, paymentRequest.getPeriod(), paymentRequest.getSalary());
         userRepository.save(user);
     }
 
-    private void updateUserPayment(User user, Payment payment) {
-        if (!user.getPayments().containsKey(payment.getPeriod())) {
+    private void updateUserPayment(User user, String period, long salary) {
+        if (!user.getPayments().containsKey(period)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment period does not exist");
         }
-        user.getPayments().put(payment.getPeriod(), payment);
+        user.getPayments().get(period).setSalary(salary);
     }
 
     public PaymentDetails getPaymentDetails(User user, String period) {
