@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import javax.management.relation.Role;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity(name = "users")
 @JsonPropertyOrder({"id", "name", "lastname", "email"})
@@ -33,8 +35,10 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private List<Roles> roles;
 
     public User() {
     }
@@ -45,7 +49,6 @@ public class User {
         this.lastname = lastname;
         this.email = email.toLowerCase();
         this.password = password;
-        this.role = "ROLE_USER";
     }
 
     public Long getId() {
@@ -80,12 +83,12 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() {
-        return role;
+    public List<Roles> getRoles() {
+        return roles;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setRoles(List<Roles> roles) {
+        this.roles = roles;
     }
 
     public String getEmail() {
