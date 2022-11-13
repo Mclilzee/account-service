@@ -1,10 +1,10 @@
 package project.accountservice.payment;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -13,10 +13,8 @@ import project.accountservice.exception.CustomBadRequestError;
 import project.accountservice.user.User;
 import project.accountservice.user.UserRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class PaymentService {
@@ -31,25 +29,22 @@ public class PaymentService {
 
     private void addPaymentToUser(PaymentRequest paymentRequest) {
         User user = getUser(paymentRequest);
-        List<Payment> newPayments = new ArrayList<>(user.getPayments());
-        newPayments.add(new Payment(paymentRequest.getPeriod(), paymentRequest.getSalary()));
-        user.setPayments(newPayments);
+        user.getPayments().put(paymentRequest.getPeriod(), new Payment(paymentRequest.getPeriod(), paymentRequest.getSalary()));
         userRepository.save(user);
     }
 
     public void updatePayment(PaymentRequest paymentRequest) {
         User user = getUser(paymentRequest);
-        Payment newPayment = new Payment(paymentRequest.getPeriod(), paymentRequest.getSalary());
-        updateUserPayment(user, newPayment);
+        Payment payment = new Payment(paymentRequest.getPeriod(), paymentRequest.getSalary());
+        updateUserPayment(user, payment);
         userRepository.save(user);
     }
 
     private void updateUserPayment(User user, Payment payment) {
-        int index = user.getPayments().indexOf(payment);
-        if (index == -1) {
+        if (!user.getPayments().containsKey(payment.getPeriod())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment period does not exist");
         }
-        user.getPayments().get(index).setSalary(payment.getSalary());
+        user.getPayments().put(payment.getPeriod(), payment);
     }
 
     public PaymentDetails getPaymentDetails(User user, String period) {
@@ -58,22 +53,19 @@ public class PaymentService {
     }
 
     public List<PaymentDetails> getPaymentDetails(User user) {
-        return user.getPayments()
+        return user.getPayments().values()
                 .stream()
                 .map(payment -> new PaymentDetails(user.getName(), user.getLastname(), payment.getPeriod(), payment.getSalary()))
                 .toList();
     }
 
     public Payment getPayment(User user, String period) {
-        List<Payment> payments = user.getPayments().stream()
-                .filter(payment -> payment.getPeriod().equals(period))
-                .limit(1)
-                .collect(Collectors.toList());
-        if (payments.isEmpty()) {
+        Optional<Payment> payment = Optional.ofNullable(user.getPayments().get(period));
+        if (payment.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment does not exist");
         }
 
-        return payments.get(0);
+        return payment.get();
     }
 
     private User getUser(PaymentRequest paymentRequest) {
@@ -85,9 +77,9 @@ public class PaymentService {
         return user.get();
     }
 
-    @ExceptionHandler(org.hibernate.exception.ConstraintViolationException.class)
+    @ExceptionHandler(TransactionSystemException.class)
     protected ResponseEntity<CustomBadRequestError> handleFailedQueryException(
-            ConstraintViolationException ex,
+            TransactionSystemException ex,
             WebRequest request) {
         CustomBadRequestError body = new CustomBadRequestError("User payment period duplicated", request);
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
