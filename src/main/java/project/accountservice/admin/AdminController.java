@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import project.accountservice.user.User;
 
+import javax.validation.Valid;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,11 @@ public class AdminController {
         response.put("user", email);
         response.put("status", "Deleted successfully!");
         return response;
+    }
+
+    @PutMapping("/api/admin/user/role")
+    public User changeUserRoles(@RequestBody @Valid RoleRequest roleRequest) {
+        return adminService.changeUserRole(roleRequest);
     }
 
 }
