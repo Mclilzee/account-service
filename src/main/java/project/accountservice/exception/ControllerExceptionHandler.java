@@ -1,5 +1,6 @@
 package project.accountservice.exception;
 
+import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,18 +20,18 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         String message = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
-        CustomBadRequestError body = new CustomBadRequestError(message, request);
+        CustomErrorResponse body = new CustomErrorResponse(message, status, request);
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    protected ResponseEntity<CustomBadRequestError> handleMethodArgumentNotValid(ConstraintViolationException ex, WebRequest request) {
+    protected ResponseEntity<CustomErrorResponse> handleMethodArgumentNotValid(ConstraintViolationException ex, HttpStatus status, WebRequest request) {
         String message = ex.getConstraintViolations()
                 .stream()
                 .limit(1)
                 .map(ConstraintViolation::getMessageTemplate)
                 .collect(Collectors.joining(""));
-        CustomBadRequestError body = new CustomBadRequestError(message, request);
+        CustomErrorResponse body = new CustomErrorResponse(message, status, request);
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 }

@@ -4,24 +4,21 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import project.accountservice.user.Role.Roles;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.util.Optional;
 
 public class RoleRequest {
 
     @NotBlank
     private String user;
 
-    @NotNull
-    private Roles role;
+    private String role;
 
     @Pattern(regexp = "GRANT|REMOVE", message = "Request should be GRANT or REMOVE only")
     private String operation;
 
     @JsonCreator
     public RoleRequest(String user, String role, String operation) {
-        this.role = Roles.valueOf(role);
+        this.role = role;
         this.user = user.toLowerCase();
         this.operation = operation;
     }
@@ -33,11 +30,13 @@ public class RoleRequest {
         return user;
     }
 
-    public Roles getRole() {
+    public String getRole() {
         return role;
     }
 
     public String getOperation() {
         return operation;
     }
+
+
 }

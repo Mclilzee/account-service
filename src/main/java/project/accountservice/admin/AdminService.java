@@ -41,7 +41,7 @@ public class AdminService {
     }
 
     private void changeUserRole(User user, RoleRequest roleRequest) {
-        Role role = new Role(roleRequest.getRole());
+        Role role = new Role(Role.Roles.valueOf(roleRequest.getRole()));
         if ("GRANT".equals(roleRequest.getOperation())) {
             user.addRole(role);
         } else {
