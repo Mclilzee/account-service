@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import project.accountservice.user.Role;
-import project.accountservice.user.Role.Roles;
 import project.accountservice.user.User;
 import project.accountservice.user.UserRepository;
 

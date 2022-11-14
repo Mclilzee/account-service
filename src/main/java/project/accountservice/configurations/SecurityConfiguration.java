@@ -13,6 +13,9 @@ import project.accountservice.user.UserDetailsServiceImp;
 @Configuration
 public class SecurityConfiguration {
 
+    @Autowired
+    AccessDeniedCustomHandler accessDeniedCustomHandler;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
@@ -24,7 +27,8 @@ public class SecurityConfiguration {
                 .and().httpBasic()
                 .and().formLogin()
                 .and().csrf().disable().headers().frameOptions().disable()
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().exceptionHandling().accessDeniedHandler(accessDeniedCustomHandler);
 
         return http.build();
     }
