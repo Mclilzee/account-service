@@ -7,7 +7,9 @@ import org.springframework.security.authentication.event.AuthenticationSuccessEv
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
+import project.accountservice.logger.EventLogService;
 import project.accountservice.user.User;
 import project.accountservice.user.UserRepository;
 
@@ -23,6 +25,9 @@ public class AuthenticationHandler {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    EventLogService eventLogService;
+
     @EventListener
     public void onApplicationEvent(AuthenticationFailureBadCredentialsEvent event) {
         String userName = event.getAuthentication().getName();
@@ -30,6 +35,11 @@ public class AuthenticationHandler {
             return;
         }
 
+        eventLogService.logLoginFailedEvent(userName);
+        useLoginAttempt(userName);
+    }
+
+    private void useLoginAttempt(String userName) {
         loginAttemptService.loginFailed(userName);
         if (loginAttemptService.isBlocked(userName)) {
             User user = userRepository.findByEmail(userName);
