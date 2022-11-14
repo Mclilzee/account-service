@@ -4,18 +4,18 @@ import project.accountservice.util.StringUtil;
 
 import java.time.Month;
 
-public class PaymentDetails {
+public class PaymentDetails implements Comparable<PaymentDetails> {
 
     private final String name;
     private final String lastname;
     private final String period;
-    private final String salary;
+    private final long salary;
 
     public PaymentDetails(String name, String lastname, String period, long salary) {
         this.name = name;
         this.lastname = lastname;
-        this.period = formatPeriod(period);
-        this.salary = formatSalary(salary);
+        this.period = period;
+        this.salary = salary;
     }
 
     private String formatSalary(long salary) {
@@ -37,10 +37,15 @@ public class PaymentDetails {
     }
 
     public String getPeriod() {
-        return period;
+        return formatPeriod(period);
     }
 
     public String getSalary() {
-        return salary;
+        return formatSalary(salary);
+    }
+
+    @Override
+    public int compareTo(PaymentDetails other) {
+        return other.period.compareTo(this.period);
     }
 }
