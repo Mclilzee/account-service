@@ -25,7 +25,7 @@ public class UserController {
     @PostMapping("/api/auth/signup")
     public User signUp(@Valid @RequestBody User user, ServletWebRequest request) {
         User newUser = userService.addUser(user);
-        eventLogService.logCreateUserEvent(user.getName(), request);
+        eventLogService.logCreateUserEvent(user.getEmail(), request);
         return newUser;
     }
 
