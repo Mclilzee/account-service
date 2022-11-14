@@ -21,24 +21,29 @@ public class Role {
     }
 
     public String getRole() {
-        return this.role.name();
+        return this.role.toString();
     }
 
     public static Role getAdministrator() {
-        return new Role(Roles.ROLE_ADMINISTRATOR);
+        return new Role(Roles.ADMINISTRATOR);
     }
 
     public static Role getAccountant() {
-        return new Role(Roles.ROLE_ACCOUNTANT);
+        return new Role(Roles.ACCOUNTANT);
     }
 
     public static Role getUser() {
-        return new Role(Roles.ROLE_USER);
+        return new Role(Roles.USER);
     }
 
-    enum Roles {
-        ROLE_ADMINISTRATOR,
-        ROLE_ACCOUNTANT,
-        ROLE_USER
+    public enum Roles {
+        ADMINISTRATOR,
+        ACCOUNTANT,
+        USER;
+
+        @Override
+        public String toString() {
+            return "ROLE_" + this.name();
+        }
     }
 }
