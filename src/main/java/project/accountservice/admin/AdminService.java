@@ -45,7 +45,16 @@ public class AdminService {
         if ("GRANT".equals(roleRequest.getOperation())) {
             user.addRole(role);
         } else {
-            user.removeRole(role);
+            removeRole(user, role);
         }
+    }
+
+    private void removeRole(User user, Role role) {
+        if (user.getRoles().size() == 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user must have at least one role!");
+        } else if (!user.getRoles().contains(role.getRole())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user does not have a role!");
+        }
+        user.removeRole(role);
     }
 }
