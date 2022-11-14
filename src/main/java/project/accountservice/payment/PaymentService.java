@@ -72,6 +72,7 @@ public class PaymentService {
                         payment.getPeriod(),
                         payment.getSalary())
                 )
+                .sorted()
                 .toList();
     }
 
