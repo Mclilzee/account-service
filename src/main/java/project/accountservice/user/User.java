@@ -52,7 +52,7 @@ public class User {
         this.lastname = lastname;
         this.email = email.toLowerCase();
         this.password = password;
-        this.locked = true;
+        this.locked = false;
     }
 
     public Long getId() {
