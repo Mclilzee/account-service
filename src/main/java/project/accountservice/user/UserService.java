@@ -41,7 +41,7 @@ public class UserService {
         if (userRepository.count() == 0){
             user.setRoles(Set.of(Role.getAdministrator()));
         } else {
-            user.setRoles(Set.of(Role.getUser()));
+            user.setRoles(Set.of(Role.getUserRole()));
         }
     }
 
