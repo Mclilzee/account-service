@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import project.accountservice.user.Role;
+import project.accountservice.user.Role.Roles;
 import project.accountservice.user.User;
 import project.accountservice.user.UserRepository;
 
@@ -43,10 +44,17 @@ public class AdminService {
     private void changeUserRole(User user, RoleRequest roleRequest) {
         Role role = new Role(Role.Roles.valueOf(roleRequest.getRole()));
         if ("GRANT".equals(roleRequest.getOperation())) {
-            user.addRole(role);
+            addRole(user, role);
         } else {
             removeRole(user, role);
         }
+    }
+
+    private void addRole(User user, Role role) {
+        if (combiningBusinessRoleWithAdministratorRole(user, role)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user cannot combine administrative and business roles!");
+        }
+        user.addRole(role);
     }
 
     private void removeRole(User user, Role role) {
@@ -56,5 +64,20 @@ public class AdminService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user does not have a role!");
         }
         user.removeRole(role);
+    }
+
+    private boolean combiningBusinessRoleWithAdministratorRole(User user, Role role) {
+        return containsBusinessRole(user.getRoles()) && containsAdministratorRole(List.of(role.getRole())) ||
+                containsAdministratorRole(user.getRoles()) && containsBusinessRole(List.of(role.getRole()));
+    }
+
+    private boolean containsBusinessRole(List<String> roles) {
+        return roles.stream()
+                .anyMatch(role -> role.equals(Role.Roles.USER.toString()) || role.equals(Role.Roles.ACCOUNTANT.toString()));
+    }
+
+    private boolean containsAdministratorRole(List<String> roles) {
+        return roles.stream()
+                .anyMatch(role -> role.equals(Role.Roles.ADMINISTRATOR.toString()));
     }
 }
