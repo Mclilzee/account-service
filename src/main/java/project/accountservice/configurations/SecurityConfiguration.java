@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import project.accountservice.user.Role;
 import project.accountservice.user.UserDetailsServiceImp;
 
 @Configuration
@@ -19,10 +20,11 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .mvcMatchers("/api/admin/**").hasRole("ADMINISTRATOR")
-                .mvcMatchers("/api/acct/**").hasRole("ACCOUNTANT")
-                .mvcMatchers("/api/empl/payment").hasAnyRole("USER", "ACCOUNTANT")
-                .mvcMatchers("/api/auth/changepass").hasAnyRole("USER", "ACCOUNTANT", "ADMINISTRATOR")
+                .mvcMatchers("/api/admin/**").hasRole(Role.ADMINISTRATOR.name())
+                .mvcMatchers("/api/acct/**").hasRole(Role.ACCOUNTANT.name())
+                .mvcMatchers("/api/empl/payment").hasAnyRole(Role.USER.name(), Role.ACCOUNTANT.name())
+                .mvcMatchers("/api/auth/changepass").hasAnyRole(Role.USER.name(), Role.ACCOUNTANT.name(), Role.ADMINISTRATOR.name())
+                .mvcMatchers("/api/security/events").hasRole(Role.AUDITOR.name())
                 .mvcMatchers("/api/auth/signup", "/actuator/shutdown").permitAll()
                 .and().httpBasic()
                 .and().formLogin()
