@@ -14,7 +14,7 @@ import java.util.List;
 public class AdminService {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     public List<User> getUsers() {
         return userRepository.findAll();
@@ -28,5 +28,24 @@ public class AdminService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't remove ADMINISTRATOR role!");
         }
         userRepository.delete(user);
+    }
+
+    public User changeUserRole(RoleRequest roleRequest) {
+        User user = userRepository.findByEmail(roleRequest.getUser());
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User doesn't exist");
+        }
+
+        changeUserRole(user, roleRequest);
+        return userRepository.save(user);
+    }
+
+    private void changeUserRole(User user, RoleRequest roleRequest) {
+        Role role = new Role(roleRequest.getRole());
+        if ("GRANT".equals(roleRequest.getOperation())) {
+            user.addRole(role);
+        } else {
+            user.removeRole(role);
+        }
     }
 }
