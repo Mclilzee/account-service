@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.nio.channels.WritableByteChannel;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,6 +41,9 @@ public class User {
     @JoinColumn(name = "user_id", nullable = false)
     private Set<RoleDetails> roleDetails;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private boolean locked;
+
     public User() {
     }
 
@@ -49,6 +53,7 @@ public class User {
         this.lastname = lastname;
         this.email = email.toLowerCase();
         this.password = password;
+        this.locked = false;
     }
 
     public Long getId() {
@@ -98,7 +103,7 @@ public class User {
     }
 
     public void addRole(RoleDetails roleDetails) {
-       this.roleDetails.add(roleDetails);
+        this.roleDetails.add(roleDetails);
     }
 
     public void setRoles(Set<RoleDetails> roleDetails) {
@@ -115,5 +120,13 @@ public class User {
 
     public void removeRole(RoleDetails roleDetails) {
         this.roleDetails.remove(roleDetails);
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
+
+    public boolean getLocked() {
+        return this.locked;
     }
 }
