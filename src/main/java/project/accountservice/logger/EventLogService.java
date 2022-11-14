@@ -35,6 +35,13 @@ public class EventLogService {
         eventLogRepository.save(event);
     }
 
+    public void logBruteForceEvent(String userName) {
+        String url = getUrl();
+        EventLog bruteForce = new EventLog(Events.BRUTE_FORCE.name(), userName, url, url);
+        EventLog lockUser = new EventLog(Events.LOCK_USER.name(), userName, "Lock user " + userName, url);
+        eventLogRepository.saveAll(List.of(bruteForce, lockUser));
+    }
+
     private String getUrl() {
         ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (request == null) {

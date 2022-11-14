@@ -45,6 +45,7 @@ public class AuthenticationHandler {
             User user = userRepository.findByEmail(userName);
             user.setLocked(true);
             userRepository.save(user);
+            eventLogService.logBruteForceEvent(userName);
         }
     }
 
