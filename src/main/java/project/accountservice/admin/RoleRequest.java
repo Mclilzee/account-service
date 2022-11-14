@@ -22,7 +22,7 @@ public class RoleRequest {
     @JsonCreator
     public RoleRequest(String user, String role, String operation) {
         this.role = Roles.valueOf(role);
-        this.user = user;
+        this.user = user.toLowerCase();
         this.operation = operation;
     }
 
