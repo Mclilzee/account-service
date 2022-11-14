@@ -8,6 +8,7 @@ import project.accountservice.user.User;
 import project.accountservice.util.RolesUtil;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,5 +43,21 @@ public class AdminController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found!");
         }
         return adminService.changeUserRole(roleRequest);
+    }
+
+    @PutMapping("/api/admin/user/access")
+    public Map<String, String> changeUserAccess(@RequestBody AccessRequest accessRequest) {
+
+        return getAccessChangedResponse(accessRequest);
+    }
+
+    private Map<String, String> getAccessChangedResponse(AccessRequest accessRequest) {
+        Map<String, String> body = new HashMap<>();
+        if ("LOCK".equals(accessRequest.getOperation())) {
+            body.put("status", "User " + accessRequest.getUser() + " locked!");
+        } else {
+            body.put("status", "User " + accessRequest.getUser() + " unlocked!");
+        }
+        return body;
     }
 }
