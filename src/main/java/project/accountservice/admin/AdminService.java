@@ -75,4 +75,22 @@ public class AdminService {
         user.removeRole(roleDetails);
     }
 
+    public void changeUserAccess(AccessRequest accessRequest) {
+        User user = getUser(accessRequest.getUser());
+        if ("LOCK".equals(accessRequest.getOperation())) {
+            lockUser(user);
+        } else {
+            user.setLocked(false);
+        }
+
+        userRepository.save(user);
+    }
+
+    private void lockUser(User user) {
+        if (RolesUtil.containsAdministratorRole(user.getRoles())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't lock the ADMINISTRATOR!");
+        }
+
+        user.setLocked(true);
+    }
 }

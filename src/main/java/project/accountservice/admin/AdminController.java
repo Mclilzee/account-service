@@ -47,7 +47,7 @@ public class AdminController {
 
     @PutMapping("/api/admin/user/access")
     public Map<String, String> changeUserAccess(@RequestBody AccessRequest accessRequest) {
-
+        adminService.changeUserAccess(accessRequest);
         return getAccessChangedResponse(accessRequest);
     }
 
