@@ -8,11 +8,6 @@ import java.util.List;
 
 public class RolesUtil {
 
-   public static boolean roleExists(Role role) {
-      return Arrays.stream(Role.values())
-              .anyMatch(enumRole -> role == enumRole);
-   }
-
     public static boolean roleStringExist(String roleString) {
        return Arrays.stream(Role.values())
                .anyMatch(role -> role.name().equals(roleString));
@@ -25,7 +20,7 @@ public class RolesUtil {
 
     public static boolean containsBusinessRole(List<Role> roles) {
         return roles.stream()
-                .anyMatch(role -> role == Role.USER || role == Role.ACCOUNTANT);
+                .anyMatch(role -> role == Role.USER || role == Role.ACCOUNTANT || role == Role.AUDITOR);
     }
 
     public static boolean containsAdministratorRole(List<Role> roles) {
