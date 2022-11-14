@@ -1,7 +1,5 @@
 package project.accountservice.logger;
 
-import org.springframework.data.annotation.TypeAlias;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;

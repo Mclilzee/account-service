@@ -2,6 +2,7 @@ package project.accountservice.logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.ServletWebRequest;
 
 import java.util.List;
 
@@ -13,5 +14,10 @@ public class EventLogService {
 
     public List<EventLog> getEventsLog() {
         return eventLogRepository.findAll();
+    }
+
+    public void logCreateUserEvent(String username, ServletWebRequest request) {
+        EventLog event = new EventLog(Events.CREATE_USER.name(), "Anonymous", username, request.getRequest().getRequestURI());
+        eventLogRepository.save(event);
     }
 }

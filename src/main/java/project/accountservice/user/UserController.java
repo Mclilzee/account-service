@@ -6,6 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.ServletWebRequest;
+import project.accountservice.logger.EventLogService;
 
 import javax.validation.Valid;
 import java.util.LinkedHashMap;
@@ -17,9 +19,14 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    EventLogService eventLogService;
+
     @PostMapping("/api/auth/signup")
-    public User signUp(@Valid @RequestBody User user) {
-        return userService.addUser(user);
+    public User signUp(@Valid @RequestBody User user, ServletWebRequest request) {
+        User newUser = userService.addUser(user);
+        eventLogService.logCreateUserEvent(user.getName(), request);
+        return newUser;
     }
 
     @PostMapping("/api/auth/changepass")
