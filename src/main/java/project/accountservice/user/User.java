@@ -83,6 +83,12 @@ public class User {
         this.password = password;
     }
 
+    public List<Role> getRoles() {
+        return this.roleDetails.stream()
+                .map(RoleDetails::getRole)
+                .collect(Collectors.toList());
+    }
+
     @JsonProperty("roles")
     public List<String> getAuthorities() {
         return roleDetails.stream()

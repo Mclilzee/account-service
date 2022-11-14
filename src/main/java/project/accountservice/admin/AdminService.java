@@ -8,6 +8,7 @@ import project.accountservice.user.Role;
 import project.accountservice.user.RoleDetails;
 import project.accountservice.user.User;
 import project.accountservice.user.UserRepository;
+import project.accountservice.util.RolesUtil;
 
 import java.util.List;
 
@@ -54,17 +55,17 @@ public class AdminService {
     }
 
     private void addRole(User user, RoleDetails roleDetails) {
-        if (combiningBusinessRoleWithAdministratorRole(user, roleDetails)) {
+        if (RolesUtil.combiningBusinessRoleWithAdministratorRole(user, roleDetails.getRole())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user cannot combine administrative and business roles!");
         }
         user.addRole(roleDetails);
     }
 
     private void removeRole(User user, RoleDetails roleDetails) {
-        if (roleDetails.getAuthority().equals(Role.ADMINISTRATOR.getAuthority())) {
+        if (roleDetails.getRole() == Role.ADMINISTRATOR) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't remove ADMINISTRATOR role!");
         }
-        if (!user.getAuthorities().contains(roleDetails.getAuthority())) {
+        if (!user.getRoles().contains(roleDetails.getRole())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user does not have a role!");
         }
 
@@ -74,18 +75,4 @@ public class AdminService {
         user.removeRole(roleDetails);
     }
 
-    private boolean combiningBusinessRoleWithAdministratorRole(User user, RoleDetails roleDetails) {
-        return containsBusinessRole(user.getAuthorities()) && containsAdministratorRole(List.of(roleDetails.getAuthority())) ||
-                containsAdministratorRole(user.getAuthorities()) && containsBusinessRole(List.of(roleDetails.getAuthority()));
-    }
-
-    private boolean containsBusinessRole(List<String> roles) {
-        return roles.stream()
-                .anyMatch(role -> role.equals(Role.USER.getAuthority()) || role.equals(Role.ACCOUNTANT.getAuthority()));
-    }
-
-    private boolean containsAdministratorRole(List<String> roles) {
-        return roles.stream()
-                .anyMatch(role -> role.equals(Role.ADMINISTRATOR.getAuthority()));
-    }
 }

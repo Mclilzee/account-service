@@ -38,7 +38,7 @@ public class AdminController {
 
     @PutMapping("/api/admin/user/role")
     public User changeUserRoles(@RequestBody @Valid RoleRequest roleRequest) {
-        if (!RolesUtil.authorityExist(roleRequest.getRoleString())) {
+        if (!RolesUtil.roleStringExist(roleRequest.getRoleString())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found!");
         }
         return adminService.changeUserRole(roleRequest);
