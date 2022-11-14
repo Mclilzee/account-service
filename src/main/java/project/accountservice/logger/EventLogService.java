@@ -20,4 +20,9 @@ public class EventLogService {
         EventLog event = new EventLog(Events.CREATE_USER.name(), "Anonymous", username, request.getRequest().getRequestURI());
         eventLogRepository.save(event);
     }
+
+    public void logPasswordChangeEvent(String username, ServletWebRequest request) {
+        EventLog event = new EventLog(Events.CHANGE_PASSWORD.name(), username, username, request.getRequest().getRequestURI());
+        eventLogRepository.save(event);
+    }
 }

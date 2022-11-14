@@ -32,8 +32,10 @@ public class UserController {
     @PostMapping("/api/auth/changepass")
     public Map<String, String> changePassword(
             @AuthenticationPrincipal UserDetails userDetails,
-            @Valid @RequestBody Password newPassword) {
+            @Valid @RequestBody Password newPassword,
+            ServletWebRequest request) {
         userService.changeUserPassword(userDetails, newPassword);
+        eventLogService.logPasswordChangeEvent(userDetails.getUsername(), request);
         return getPasswordChangeSuccessResponse(userDetails);
     }
 
