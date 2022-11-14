@@ -1,22 +1,21 @@
 package project.accountservice.login;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.WebRequest;
 import project.accountservice.user.User;
 import project.accountservice.user.UserRepository;
-import project.accountservice.user.UserService;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Component
-public class AuthenticationFailureListener {
+public class AuthenticationHandler {
 
     @Autowired
-    private HttpServletRequest httpServletRequest;
+    private WebRequest request;
 
     @Autowired
     private LoginAttemptService loginAttemptService;
@@ -41,6 +40,7 @@ public class AuthenticationFailureListener {
 
     @EventListener
     public void onApplicationEvent(AuthenticationSuccessEvent event) {
+        String url = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getRequestURI();
         loginAttemptService.loginSucceeded(event.getAuthentication().getName());
     }
 }

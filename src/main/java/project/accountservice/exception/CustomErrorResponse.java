@@ -2,7 +2,7 @@ package project.accountservice.exception;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 
 import java.time.LocalDateTime;
 
@@ -14,12 +14,12 @@ public class CustomErrorResponse {
     private final String message;
     private final String path;
 
-    public CustomErrorResponse(String message,HttpStatus status, WebRequest request) {
+    public CustomErrorResponse(String message,HttpStatus status, ServletWebRequest request) {
         this.timestamp = LocalDateTime.now();
         this.status = status.value();
         this.error = status.getReasonPhrase();
         this.message = message;
-        this.path = request.getDescription(false).substring(4);
+        this.path = request.getRequest().getRequestURI();
     }
 
     public LocalDateTime getTimestamp() {
