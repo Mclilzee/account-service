@@ -8,7 +8,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.nio.channels.WritableByteChannel;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
