@@ -4,11 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import project.accountservice.user.Role;
 import project.accountservice.user.User;
+import project.accountservice.util.RolesUtil;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +38,7 @@ public class AdminController {
 
     @PutMapping("/api/admin/user/role")
     public User changeUserRoles(@RequestBody @Valid RoleRequest roleRequest) {
-        if (Arrays.stream(Role.Roles.values()).noneMatch(role -> role.name().equals(roleRequest.getRole()))) {
+        if (!RolesUtil.authorityExist(roleRequest.getRoleString())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found!");
         }
         return adminService.changeUserRole(roleRequest);

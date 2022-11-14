@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import project.accountservice.user.Role;
+import project.accountservice.user.RoleDetails;
 import project.accountservice.user.User;
 import project.accountservice.user.UserRepository;
 
@@ -22,7 +23,7 @@ public class AdminService {
 
     public void deleteUser(String email) {
         User user = getUser(email);
-        if (user.getRoles().contains(Role.getAdministrator().getRole())) {
+        if (user.getAuthorities().contains(RoleDetails.getAdministratorRole().getAuthority())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't remove ADMINISTRATOR role!");
         }
         userRepository.delete(user);
@@ -44,47 +45,47 @@ public class AdminService {
     }
 
     private void changeUserRole(User user, RoleRequest roleRequest) {
-        Role role = new Role(Role.Roles.valueOf(roleRequest.getRole()));
+        RoleDetails roleDetails = new RoleDetails(Role.valueOf(roleRequest.getRoleString()));
         if ("GRANT".equals(roleRequest.getOperation())) {
-            addRole(user, role);
+            addRole(user, roleDetails);
         } else {
-            removeRole(user, role);
+            removeRole(user, roleDetails);
         }
     }
 
-    private void addRole(User user, Role role) {
-        if (combiningBusinessRoleWithAdministratorRole(user, role)) {
+    private void addRole(User user, RoleDetails roleDetails) {
+        if (combiningBusinessRoleWithAdministratorRole(user, roleDetails)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user cannot combine administrative and business roles!");
         }
-        user.addRole(role);
+        user.addRole(roleDetails);
     }
 
-    private void removeRole(User user, Role role) {
-        if (role.getRole().equals(Role.Roles.ADMINISTRATOR.toString())) {
+    private void removeRole(User user, RoleDetails roleDetails) {
+        if (roleDetails.getAuthority().equals(Role.ADMINISTRATOR.getAuthority())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't remove ADMINISTRATOR role!");
         }
-        if (!user.getRoles().contains(role.getRole())) {
+        if (!user.getAuthorities().contains(roleDetails.getAuthority())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user does not have a role!");
         }
 
-        if (user.getRoles().size() == 1) {
+        if (user.getAuthorities().size() == 1) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user must have at least one role!");
         }
-        user.removeRole(role);
+        user.removeRole(roleDetails);
     }
 
-    private boolean combiningBusinessRoleWithAdministratorRole(User user, Role role) {
-        return containsBusinessRole(user.getRoles()) && containsAdministratorRole(List.of(role.getRole())) ||
-                containsAdministratorRole(user.getRoles()) && containsBusinessRole(List.of(role.getRole()));
+    private boolean combiningBusinessRoleWithAdministratorRole(User user, RoleDetails roleDetails) {
+        return containsBusinessRole(user.getAuthorities()) && containsAdministratorRole(List.of(roleDetails.getAuthority())) ||
+                containsAdministratorRole(user.getAuthorities()) && containsBusinessRole(List.of(roleDetails.getAuthority()));
     }
 
     private boolean containsBusinessRole(List<String> roles) {
         return roles.stream()
-                .anyMatch(role -> role.equals(Role.Roles.USER.toString()) || role.equals(Role.Roles.ACCOUNTANT.toString()));
+                .anyMatch(role -> role.equals(Role.USER.getAuthority()) || role.equals(Role.ACCOUNTANT.getAuthority()));
     }
 
     private boolean containsAdministratorRole(List<String> roles) {
         return roles.stream()
-                .anyMatch(role -> role.equals(Role.Roles.ADMINISTRATOR.toString()));
+                .anyMatch(role -> role.equals(Role.ADMINISTRATOR.getAuthority()));
     }
 }

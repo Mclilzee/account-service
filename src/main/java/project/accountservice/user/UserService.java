@@ -39,9 +39,9 @@ public class UserService {
 
     private void setRole(User user) {
         if (userRepository.count() == 0){
-            user.setRoles(Set.of(Role.getAdministrator()));
+            user.setRoles(Set.of(RoleDetails.getAdministratorRole()));
         } else {
-            user.setRoles(Set.of(Role.getUserRole()));
+            user.setRoles(Set.of(RoleDetails.getUserRole()));
         }
     }
 

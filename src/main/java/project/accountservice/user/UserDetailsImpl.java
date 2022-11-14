@@ -16,7 +16,7 @@ public class UserDetailsImpl implements UserDetails {
     public UserDetailsImpl(User user) {
         username = user.getEmail();
         password = user.getPassword();
-        rolesAndAuthorities = user.getRoles().stream()
+        rolesAndAuthorities = user.getAuthorities().stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toSet());
     }

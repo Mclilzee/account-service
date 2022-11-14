@@ -3,13 +3,11 @@ package project.accountservice.user;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.springframework.data.repository.cdi.Eager;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,7 +38,7 @@ public class User {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "user_id", nullable = false)
-    private Set<Role> roles;
+    private Set<RoleDetails> roleDetails;
 
     public User() {
     }
@@ -85,19 +83,20 @@ public class User {
         this.password = password;
     }
 
-    public List<String> getRoles() {
-        return roles.stream()
-                .map(Role::getRole)
+    @JsonProperty("roles")
+    public List<String> getAuthorities() {
+        return roleDetails.stream()
+                .map(RoleDetails::getAuthority)
                 .sorted()
                 .collect(Collectors.toList());
     }
 
-    public void addRole(Role role) {
-       this.roles.add(role);
+    public void addRole(RoleDetails roleDetails) {
+       this.roleDetails.add(roleDetails);
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setRoles(Set<RoleDetails> roleDetails) {
+        this.roleDetails = roleDetails;
     }
 
     public String getEmail() {
@@ -108,7 +107,7 @@ public class User {
         this.email = email.toLowerCase();
     }
 
-    public void removeRole(Role role) {
-        this.roles.remove(role);
+    public void removeRole(RoleDetails roleDetails) {
+        this.roleDetails.remove(roleDetails);
     }
 }
