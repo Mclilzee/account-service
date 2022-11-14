@@ -12,7 +12,7 @@ import java.util.Objects;
 public class Payment implements Comparable<Payment> {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
