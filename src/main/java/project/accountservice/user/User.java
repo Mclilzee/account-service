@@ -88,6 +88,7 @@ public class User {
     public List<String> getRoles() {
         return roles.stream()
                 .map(Role::getRole)
+                .sorted()
                 .collect(Collectors.toList());
     }
 
