@@ -38,7 +38,7 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "user_id", nullable = false)
     private Set<Role> roles;
 
@@ -91,6 +91,10 @@ public class User {
                 .collect(Collectors.toList());
     }
 
+    public void addRole(Role role) {
+       this.roles.add(role);
+    }
+
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
@@ -101,5 +105,9 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email.toLowerCase();
+    }
+
+    public void removeRole(Role role) {
+        this.roles.remove(role);
     }
 }
