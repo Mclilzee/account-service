@@ -22,23 +22,26 @@ public class AdminService {
     }
 
     public void deleteUser(String email) {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!");
-        } else if (user.getRoles().contains(Role.getAdministrator().getRole())) {
+        User user = getUser(email);
+        if (user.getRoles().contains(Role.getAdministrator().getRole())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't remove ADMINISTRATOR role!");
         }
         userRepository.delete(user);
     }
 
     public User changeUserRole(RoleRequest roleRequest) {
-        User user = userRepository.findByEmail(roleRequest.getUser());
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User doesn't exist");
-        }
-
+        User user = getUser(roleRequest.getUser());
         changeUserRole(user, roleRequest);
         return userRepository.save(user);
+    }
+
+    private User getUser(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!");
+        }
+
+        return user;
     }
 
     private void changeUserRole(User user, RoleRequest roleRequest) {
@@ -58,10 +61,15 @@ public class AdminService {
     }
 
     private void removeRole(User user, Role role) {
+        if (role.getRole().equals(Role.Roles.ADMINISTRATOR.toString())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't remove ADMINISTRATOR role!");
+        }
+        if (!user.getRoles().contains(role.getRole())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user does not have a role!");
+        }
+
         if (user.getRoles().size() == 1) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user must have at least one role!");
-        } else if (!user.getRoles().contains(role.getRole())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user does not have a role!");
         }
         user.removeRole(role);
     }
