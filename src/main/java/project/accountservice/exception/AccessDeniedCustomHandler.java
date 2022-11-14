@@ -1,4 +1,4 @@
-package project.accountservice.configurations;
+package project.accountservice.exception;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
