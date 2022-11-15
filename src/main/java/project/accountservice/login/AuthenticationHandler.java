@@ -11,6 +11,7 @@ import org.springframework.web.context.request.WebRequest;
 import project.accountservice.logger.EventLogService;
 import project.accountservice.user.User;
 import project.accountservice.user.UserRepository;
+import project.accountservice.util.ServletRequestUtil;
 
 @Component
 public class AuthenticationHandler {
@@ -34,7 +35,7 @@ public class AuthenticationHandler {
             return;
         }
 
-        eventLogService.logLoginFailedEvent(userName);
+        eventLogService.logLoginFailedEvent(userName, ServletRequestUtil.getUrl());
         useLoginAttempt(userName);
     }
 
@@ -44,7 +45,7 @@ public class AuthenticationHandler {
             User user = userRepository.findByEmail(userName);
             user.setLocked(true);
             userRepository.save(user);
-            eventLogService.logBruteForceEvent(userName);
+            eventLogService.logBruteForceEvent(userName, ServletRequestUtil.getUrl());
         }
     }
 

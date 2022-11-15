@@ -5,7 +5,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 public class ServletRequestUtil {
 
-    private static String getUrl() {
+    public static String getUrl() {
         ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (request == null) {
             return "/";

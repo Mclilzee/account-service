@@ -25,7 +25,7 @@ public class UserController {
     @PostMapping("/api/auth/signup")
     public User signUp(@Valid @RequestBody User user, ServletWebRequest request) {
         User newUser = userService.addUser(user);
-        eventLogService.logCreateUserEvent(user.getEmail(), request);
+        eventLogService.logCreateUserEvent(user.getEmail(), request.getRequest().getRequestURI());
         return newUser;
     }
 
@@ -35,7 +35,7 @@ public class UserController {
             @Valid @RequestBody Password newPassword,
             ServletWebRequest request) {
         userService.changeUserPassword(userDetails, newPassword);
-        eventLogService.logPasswordChangeEvent(userDetails.getUsername(), request);
+        eventLogService.logPasswordChangeEvent(userDetails.getUsername(), request.getRequest().getRequestURI());
         return getPasswordChangeSuccessResponse(userDetails);
     }
 
