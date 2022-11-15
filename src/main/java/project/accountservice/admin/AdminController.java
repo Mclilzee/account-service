@@ -47,11 +47,26 @@ public class AdminController {
     }
 
     @PutMapping("/api/admin/user/role")
-    public User changeUserRoles(@RequestBody @Valid RoleRequest roleRequest) {
+    public User changeUserRoles(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody @Valid RoleRequest roleRequest,
+            ServletWebRequest request) {
+
         if (!RolesUtil.roleStringExist(roleRequest.getRoleString())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found!");
         }
-        return adminService.changeUserRole(roleRequest);
+
+        User user = adminService.changeUserRole(roleRequest);
+        logUserRoleChangeEvent(userDetails, roleRequest, request);
+        return user;
+    }
+
+    private void logUserRoleChangeEvent(UserDetails userDetails, RoleRequest roleRequest, ServletWebRequest request) {
+        if ("GRANT".equals(roleRequest.getOperation())) {
+           eventLogService.logRoleGrantEvent(userDetails.getUsername(), roleRequest, request.getRequest().getRequestURI());
+        } else {
+            eventLogService.logRoleRemovalEvent(userDetails.getUsername(),roleRequest, request.getRequest().getRequestURI());
+        }
     }
 
     @PutMapping("/api/admin/user/access")
