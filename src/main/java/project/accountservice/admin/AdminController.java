@@ -2,8 +2,12 @@ package project.accountservice.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.server.ResponseStatusException;
+import project.accountservice.logger.EventLogService;
 import project.accountservice.user.User;
 import project.accountservice.util.RolesUtil;
 
@@ -19,14 +23,18 @@ public class AdminController {
     @Autowired
     AdminService adminService;
 
+    @Autowired
+    EventLogService eventLogService;
+
     @GetMapping("/api/admin/user")
     public List<User> getUsers() {
        return adminService.getUsers();
     }
 
     @DeleteMapping("/api/admin/user/{email}")
-    public Map<String, String> deleteUser(@PathVariable String email) {
+    public Map<String, String> deleteUser(@AuthenticationPrincipal UserDetails user, @PathVariable String email, ServletWebRequest request) {
         adminService.deleteUser(email);
+        eventLogService.logUserDeletionEvent(user.getUsername(), email, request.getRequest().getRequestURI());
         return getUserDeleteSuccessfullyResponse(email);
     }
 

@@ -40,4 +40,9 @@ public class EventLogService {
         EventLog event = new EventLog(Events.ACCESS_DENIED.name(), name, requestURI, requestURI);
         eventLogRepository.save(event);
     }
+
+    public void logUserDeletionEvent(String admin, String user, String requestURI) {
+        EventLog event = new EventLog(Events.DELETE_USER.name(), admin, user, requestURI);
+        eventLogRepository.save(event);
+    }
 }
