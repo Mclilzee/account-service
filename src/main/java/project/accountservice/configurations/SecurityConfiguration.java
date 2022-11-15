@@ -20,6 +20,8 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.requiresChannel().anyRequest().requiresSecure();
+
         http.authorizeRequests(authorize -> authorize
                         .mvcMatchers("/api/admin/**").hasRole(Role.ADMINISTRATOR.name())
                         .mvcMatchers("/api/acct/**").hasRole(Role.ACCOUNTANT.name())
