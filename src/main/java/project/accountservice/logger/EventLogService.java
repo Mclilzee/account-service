@@ -53,4 +53,9 @@ public class EventLogService {
     private String getUrl(ServletWebRequest request) {
         return request.getRequest().getRequestURI();
     }
+
+    public void logAccessDeniedEvent(String name, String requestURI) {
+        EventLog event = new EventLog(Events.ACCESS_DENIED.name(), name, requestURI, requestURI);
+        eventLogRepository.save(event);
+    }
 }
