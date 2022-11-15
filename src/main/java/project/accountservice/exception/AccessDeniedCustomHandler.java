@@ -13,6 +13,7 @@ import java.io.IOException;
 public class AccessDeniedCustomHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException ex) throws IOException, ServletException {
+
         response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied!");
     }
 }

@@ -16,11 +16,4 @@ public class EventsPublisherConfiguration {
             (ApplicationEventPublisher applicationEventPublisher) {
         return new DefaultAuthenticationEventPublisher(applicationEventPublisher);
     }
-
-    @Bean
-    public AuthorizationEventPublisher authorizationEventPublisher (
-            ApplicationEventPublisher applicationEventPublisher) {
-        return new SpringAuthorizationEventPublisher(applicationEventPublisher);
-    }
-
 }
