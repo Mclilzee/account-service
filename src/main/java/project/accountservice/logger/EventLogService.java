@@ -45,4 +45,14 @@ public class EventLogService {
         EventLog event = new EventLog(Events.DELETE_USER.name(), admin, user, requestURI);
         eventLogRepository.save(event);
     }
+
+    public void logUserLockingEvent(String username, String user, String requestURI) {
+        EventLog event = new EventLog(Events.LOCK_USER.name(), username, user, requestURI);
+        eventLogRepository.save(event);
+    }
+
+    public void logUserUnlockingEvent(String username, String user, String requestURI) {
+        EventLog event = new EventLog(Events.UNLOCK_USER.name(), username, user, requestURI);
+        eventLogRepository.save(event);
+    }
 }

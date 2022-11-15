@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.server.ServerErrorException;
 import project.accountservice.logger.EventLogService;
 import project.accountservice.user.User;
 import project.accountservice.util.RolesUtil;
@@ -54,17 +55,25 @@ public class AdminController {
     }
 
     @PutMapping("/api/admin/user/access")
-    public Map<String, String> changeUserAccess(@RequestBody AccessRequest accessRequest) {
+    public Map<String, String> changeUserAccess(
+            @AuthenticationPrincipal UserDetails user,
+            @RequestBody AccessRequest accessRequest,
+            ServletWebRequest request) {
         adminService.changeUserAccess(accessRequest);
-        return getAccessChangedResponse(accessRequest);
+        return getAccessChangedResponse(accessRequest, user, request);
     }
 
-    private Map<String, String> getAccessChangedResponse(AccessRequest accessRequest) {
+    private Map<String, String> getAccessChangedResponse(
+            AccessRequest accessRequest,
+            UserDetails user,
+            ServletWebRequest request) {
         Map<String, String> body = new HashMap<>();
         if ("LOCK".equals(accessRequest.getOperation())) {
             body.put("status", "User " + accessRequest.getUser() + " locked!");
+            eventLogService.logUserLockingEvent(user.getUsername(), accessRequest.getUser(), request.getRequest().getRequestURI());
         } else {
             body.put("status", "User " + accessRequest.getUser() + " unlocked!");
+            eventLogService.logUserUnlockingEvent(user.getUsername(), accessRequest.getUser(), request.getRequest().getRequestURI());
         }
         return body;
     }
