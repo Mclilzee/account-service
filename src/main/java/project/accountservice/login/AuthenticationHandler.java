@@ -17,9 +17,6 @@ import project.accountservice.util.ServletRequestUtil;
 public class AuthenticationHandler {
 
     @Autowired
-    private WebRequest request;
-
-    @Autowired
     private LoginAttemptService loginAttemptService;
 
     @Autowired

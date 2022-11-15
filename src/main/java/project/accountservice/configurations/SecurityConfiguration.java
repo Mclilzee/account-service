@@ -20,14 +20,14 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .mvcMatchers("/api/admin/**").hasRole(Role.ADMINISTRATOR.name())
-                .mvcMatchers("/api/acct/**").hasRole(Role.ACCOUNTANT.name())
-                .mvcMatchers("/api/empl/payment").hasAnyRole(Role.USER.name(), Role.ACCOUNTANT.name())
-                .mvcMatchers("/api/auth/changepass").hasAnyRole(Role.USER.name(), Role.ACCOUNTANT.name(), Role.ADMINISTRATOR.name())
-                .mvcMatchers("/api/security/events").hasRole(Role.AUDITOR.name())
-                .mvcMatchers("/api/auth/signup", "/actuator/shutdown").permitAll()
-                .and().httpBasic()
+        http.authorizeRequests(authorize -> authorize
+                        .mvcMatchers("/api/admin/**").hasRole(Role.ADMINISTRATOR.name())
+                        .mvcMatchers("/api/acct/**").hasRole(Role.ACCOUNTANT.name())
+                        .mvcMatchers("/api/empl/payment").hasAnyRole(Role.USER.name(), Role.ACCOUNTANT.name())
+                        .mvcMatchers("/api/auth/changepass").hasAnyRole(Role.USER.name(), Role.ACCOUNTANT.name(), Role.ADMINISTRATOR.name())
+                        .mvcMatchers("/api/security/events").hasRole(Role.AUDITOR.name())
+                        .mvcMatchers("/api/auth/signup", "/actuator/shutdown").permitAll())
+                .httpBasic()
                 .and().formLogin()
                 .and().csrf().disable().headers().frameOptions().disable()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -43,5 +43,4 @@ public class SecurityConfiguration {
         authenticationProvider.setUserDetailsService(userDetailsService);
         return authenticationProvider;
     }
-
 }
