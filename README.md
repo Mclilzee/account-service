@@ -61,7 +61,7 @@ Note: Role and operation must be in capital letters.
 ### Example - Modifying User Role
 <img src="./examples/grant-role.png" alt="send json request to grant user the accountant role" />
 
-### Example - Retrieving User Details
+### Example - Retrieving User Data
 <img src="./examples/get-user.png" alt="request to get users on the server" />
 
 ### Example - Deleting User
