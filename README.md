@@ -49,9 +49,24 @@ The sign-up process take data verification into account.
 Admin will have access to the admin endpoint, where he will be able to grand, modify and adjust other people roles, lock, or unlock their access to the server.
 All endpoints that starts with `api/admin/` will require the admin role to be accessed.
 
-- PUT request to `api/admin/user/access` will take a JSON body request with user email as `user` property and `operation` either "LOCK" or "UNLOCK" to modify user's access.
+- PUT request to `api/admin/user/access` will take a JSON body request with user email as `user` property and `operation` either "LOCK" or "UNLOCK" case must be capital, to modify user's access.
 - PUT request to `api/admin/user/role` will take JSON body request with user email as `user` property, `role` with specific role to be granted or removed and `operation` with `GRANT` or `REMOVE` to either grant the role or remove it from user.
-- DELETE request to `api/admin/user/{email}` will take `{email}` as path variable with the user email to be deleted from the server. The Admin role cannot be deleted by other admin roles.
+Note: Role and operation must be in capital letters.
 - GET request to `api/admin/user` will return a response of the user information as JSON object
+- DELETE request to `api/admin/user/{email}` will take `{email}` as path variable with the user email to be deleted from the server. The Admin role cannot be deleted by other admin roles.
+
+### Example -  Modifying User Access
+<img src="./examples/modify-access.png" alt="json request to modify user access" />
+
+### Example - Modifying User Role
+<img src="grant-role.png" alt="send json request to grant user the accountant role" />
+
+### Example - Retrieving User Details
+<img src="" alt="send json request to sign up with user data" />
+
+### Example - Deleting User
+<img src="" alt="send json request to sign up with user data" />
+
+
 # Credits
 All HTTP Requests are made using <a href="http://www.postman.com">Postman</a>
