@@ -46,7 +46,7 @@ The sign-up process take data verification into account.
 <img src="./examples/second-signup.png" alt="send json request to sign up with user data" />
 
 ## Admin
-Admin will have access to the admin endpoint, where he will be able to grand, modify and adjust other people roles, lock, or unlock their access to the server.
+Admin will have access to the admin endpoint, where they will be able to grand, modify and adjust other people roles, lock, or unlock their access to the server.
 All endpoints that starts with `api/admin/` will require the admin role to be accessed.
 
 - PUT request to `api/admin/user/access` will take a JSON body request with user email as `user` property and `operation` either "LOCK" or "UNLOCK" case must be capital, to modify user's access.
@@ -68,6 +68,23 @@ Note: Role and operation must be in capital letters.
 <img src="./examples/delete-user.png" alt="send request to delete user" />
 
 ## Accountant
+Accountant will have access to the accountant endpoint, where they will be able to add, process and modify other people payment information.
+All endpoints that starts with `api/acct/` will require the accountant role to be accessed.
+
+- POST request to `api/acct/payments` will take list of payments for each user. JSON format is user email as `employee` period the time for payment in format of `regex: (0[1-9]|1[0-2])-20\d{2}` and the `salary` that cannot be negative
+- PUT request to `api/acct/payment` will take single json object, of specific user to modify payment for in format of user email as `employee`, `period` period of which payment to modify and `payment` the new payment modification
+
+### Example - Create Payments
+<img src="./examples/adding-payments.png" alt="send list of payments request" />
+
+### Example - Modify Payment
+<img src="./examples/modify-payment.png" alt="send modified request of new payment salary information" />
+
+
+
+
+
+
 
 # Credits
 All HTTP Requests are made using <a href="http://www.postman.com">Postman</a>
