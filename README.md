@@ -31,7 +31,13 @@ All endpoints will start at port `https://localhost:8080` by default
 ## Registering
 Registering obviously requires no previous role or to be logged in to create a new account
 - POST Request to `api/auth/signup` will enable you to send JSON object body of user data with email and password as properties to register as a user.
-Note: First created account will be granted the Admin role, others will be granted User role, the admin will have to give specific users the Accountant Role to be able to process payments, more details in the examples bellow.
+- First created account will be granted the Admin role, others will be granted User role, the admin will have to give specific users the Accountant Role to be able to process payments, more details in the examples bellow.
+
+### Sign up verification
+The sign-up process take data verification into account.
+- Email has to end in `@acme.com` to be a valid email
+- Password Must be 12 char or longer
+- Name and Lastname must be valid and not blank
 
 ## Admin
 Admin will have access to the admin endpoint, where he will be able to grand, modify and adjust other people roles / access to the server.
