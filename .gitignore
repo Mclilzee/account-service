@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### Database ###
-./service.mv.db
+service.mv.db
