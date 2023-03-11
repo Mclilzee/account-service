@@ -2,12 +2,10 @@ package project.accountservice.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 public class Password {
 
-    @NotBlank
     @Size(min = 12, message = "The password length must be at least 12 chars!")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String new_password;
