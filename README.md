@@ -80,11 +80,30 @@ All endpoints that starts with `api/acct/` will require the accountant role to b
 ### Example - Modify Payment
 <img src="./examples/modify-payment.png" alt="send modified request of new payment salary information" />
 
+## Auditor
+Auditor role is for security purposes, the auditor will be able to vew all that is happening on the server, retrieving all logged data from the database
 
+- GET request to `api/security/events` will responde with the list of all events that has happend on the server
 
+### Example - Getting Events
+<img src="./examples/get-events.png" alt="get all events that happened on server request" />
 
+## General Endpoints
+General is not a role, but a general purpose, it is granted to all user roles.
+- GET request to `api/empl/payment` will respond with a list of all current processing payments for the current user
+- GET request to `api/empl/payment?period=` will take period parameter to respond with specific payment for specific period, more will be shown in the examples bellow
+- PUT request to `api/auth/changepass` will take object of current user `password` property to change user password
 
+### Example - Getting All Payments
+Logged on as `mark@acme.com`
+<img src="./examples/getting-payments.png" alt="GET request to get current user payemnts" />
 
+### Example - Getting Payment Specific Period
+Logged on as `johndoe@acme.com`
+<img src="./examples/getting-specific-payemtn.png" alt="GET request to get specific payment" />
+
+### Example - Change Password
+<img src="./examples/change-password.png" alt="PUT request to change password" />
 
 # Credits
 All HTTP Requests are made using <a href="http://www.postman.com">Postman</a>
