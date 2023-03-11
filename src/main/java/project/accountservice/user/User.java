@@ -21,17 +21,16 @@ public class User {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "firstname must not be blank")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "lastname must not be blank")
     private String lastname;
 
     @Pattern(regexp = ".*@acme.com")
     @Column(unique = true)
     private String email;
 
-    @NotBlank
     @Size(min = 12, message = "The password length must be at least 12 chars!")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
