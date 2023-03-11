@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -29,7 +30,7 @@ public class UserController {
         return newUser;
     }
 
-    @PostMapping("/api/auth/changepass")
+    @PutMapping("/api/auth/changepass")
     public Map<String, String> changePassword(
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody Password newPassword,
