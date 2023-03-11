@@ -100,7 +100,7 @@ Logged on as `mark@acme.com`
 
 ### Example - Getting Payment Specific Period
 Logged on as `johndoe@acme.com`
-<img src="./examples/getting-specific-payemtn.png" alt="GET request to get specific payment" />
+<img src="./examples/getting-specific-payment.png" alt="GET request to get specific payment" />
 
 ### Example - Change Password
 <img src="./examples/change-password.png" alt="PUT request to change password" />
